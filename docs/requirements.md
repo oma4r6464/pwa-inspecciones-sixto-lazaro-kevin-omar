@@ -39,6 +39,13 @@ no debe bloquearse ni perder lo ya escrito; en esta etapa (sin offline
 real todavía) debe avisar claramente que el registro no se pudo enviar,
 para que el técnico lo reintente al recuperar señal.
 
+**Escenario C — Auditoría administrativa**
+El administrador académico entra a la aplicación desde su computadora de
+escritorio. Al cargar la pantalla principal, puede ver rápidamente las 
+inspecciones recientes de todos los laboratorios e identificar de forma 
+visual (gracias a las etiquetas) cuáles fueron marcadas como 
+"Requiere atención" para programar el mantenimiento necesario.
+
 ## 3. Requisitos funcionales
 
 
@@ -49,6 +56,7 @@ para que el técnico lo reintente al recuperar señal.
 | RF-03, producto futuro | Validar campos obligatorios antes de guardar. | Si falta laboratorio o descripción, se muestra un error y no se crea el registro. |
 | RF-04 | Distinguir visualmente inspecciones "Sin incidencias" de "Requiere atención". **(Implementado)** | Cada tarjeta muestra una etiqueta de color distinto según el estado. |
 | RF-05, producto futuro | Informar al usuario cuando una acción no pudo completarse por error de red. | Si falla el envío, aparece un mensaje visible indicando que debe reintentar. |
+| RF-06, producto futuro | Permitir editar una inspección enviada. | El usuario puede corregir errores en los datos enviados dentro de las primeras 24 horas posteriores al registro inicial. |
 
 ## 4. Requisitos no funcionales
 

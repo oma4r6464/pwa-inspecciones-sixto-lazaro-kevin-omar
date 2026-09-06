@@ -63,3 +63,51 @@ después del último push — el mismo SHA para los 4 integrantes]
   contenido real del proyecto (datos de demo, estructura de carpetas),
   y ajusté el contenido antes de la entrega final. No usé IA para el
   quiz presencial.
+
+---
+
+- Nombre: Armando Valerio Salmeron
+- Mi contribución concreta (con enlace a archivo, commit o revisión):
+  Revisé la documentación y amplié los requisitos en `docs/requirements.md`. Agregué el Escenario C (Auditoría administrativa) para cubrir el uso desde escritorio por un coordinador, e incorporé el requisito RF-06 (Edición de inspección) contemplando la posibilidad de corregir errores de captura durante las primeras 24 horas.
+- Decisión que puedo explicar:
+  Estoy de acuerdo con la elección de PWA porque permite que el desarrollo sea más rápido con Next.js (una sola base de código en lugar de dos apps nativas) y nos dará la base para agregar el soporte sin conexión más adelante usando un Service Worker.
+- Comando o prueba que ejecuté y resultado real:
+  Ejecuté `npm run verify` y el resultado fue PASS.
+- Qué comprueba esta prueba y qué no:
+  Comprueba que los archivos de configuración existen y el proyecto compila. Sin embargo, no verifica la calidad de nuestro análisis de requisitos en la documentación, ya que eso requiere una revisión manual por parte del profesor.
+- Limitación que encontré:
+  Actualmente la app solo muestra datos sintéticos ya escritos y no almacena nada; implementar el guardado es algo que queda para etapas futuras.
+- Uso de IA (herramienta, propósito, fragmentos influenciados y validación humana):
+  Usé Antigravity (IA) como apoyo para idear el Escenario C y el requisito de edición, validándolos para asegurarme de que coincidieran con el alcance y los objetivos de la Semana 1.
+
+---
+
+- Nombre: [NOMBRE DEL INTEGRANTE 3]
+- Mi contribución concreta (con enlace a archivo, commit o revisión):
+  
+- Decisión que puedo explicar:
+  
+- Comando o prueba que ejecuté y resultado real:
+  
+- Qué comprueba esta prueba y qué no:
+  
+- Limitación que encontré:
+  
+- Uso de IA (herramienta, propósito, fragmentos influenciados y validación humana):
+  
+
+---
+
+- Nombre: [NOMBRE DEL INTEGRANTE 4]
+- Mi contribución concreta (con enlace a archivo, commit o revisión):
+  
+- Decisión que puedo explicar:
+  
+- Comando o prueba que ejecuté y resultado real:
+  
+- Qué comprueba esta prueba y qué no:
+  
+- Limitación que encontré:
+  
+- Uso de IA (herramienta, propósito, fragmentos influenciados y validación humana):
+  
