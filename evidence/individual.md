@@ -3,8 +3,7 @@
 Repositorio privado del equipo:
 https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar
 
-SHA final del equipo: se registra en Classroom después del último push,
-usando el mismo commit del equipo.
+SHA final del equipo: 239223c5b40e01abdaab87bbc65ad133f0bbd4f4.
 
 ---
 - Nombre: Kevin Omar Sixto Lázaro
