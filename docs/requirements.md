@@ -82,7 +82,7 @@ que permita identificar a alguien fuera del contexto del ejercicio.
 | Entrega | Verificación |
 |---------|--------------|
 | Instalación limpia | `npm ci && npm run dev` corre sin errores y `http://localhost:3000` muestra 3 inspecciones sintéticas. |
-| Requisitos funcionales y no funcionales documentados | Este archivo (`docs/requirements.md`) completo con RF-01 a RF-05 y RNF-01 a RNF-05. |
+| Requisitos funcionales y no funcionales documentados | Este archivo (`docs/requirements.md`) completo con RF-01 a RF-06 y RNF-01 a RNF-05. |
 | Decisión de arquitectura documentada | `docs/decision-record.md` completo con comparación y decisión justificada. |
 | Evidencia individual | `evidence/individual.md` con contribución, SHA y prueba realizada. |
-| Verificación automatizada | `make verify && bash public-tests/check.sh` corre sin errores y `reports/verification.json` se genera. |
+| Verificación automatizada | El flujo actual ejecuta `npm run verify`, `npm test`, `npm run build` y `bash public-tests/check.sh` en GitHub Actions; `reports/verification.json` se genera como evidencia técnica. |

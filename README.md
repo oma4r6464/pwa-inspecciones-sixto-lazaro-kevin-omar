@@ -6,9 +6,11 @@ Este repositorio es el punto de partida común para las actividades de las seman
 
 ## Requisitos locales
 
-- Node.js 20 LTS o superior compatible con Next.js.
+- Node.js 20.19 o posterior compatible con Next.js.
 - npm 10 o superior.
 - Git y una cuenta de GitHub.
+
+Versiones utilizadas en esta revisión: Node.js 24.19.0 y npm 11.17.0.
 
 ## Arranque verificable
 
@@ -22,15 +24,16 @@ Abre <http://localhost:3000>. Debes ver la pantalla inicial de inspecciones con 
 Antes de entregar ejecuta:
 
 ```bash
-make verify
-bash public-tests/check.sh
+npm run verify
+npm test
+npm run build
 ```
 
-`make verify` genera `reports/verification.json`; ese archivo y la corrida verde de GitHub Actions son la evidencia técnica del arranque.
+`npm run verify` genera `reports/verification.json`. `npm test` y `npm run build` validan la prueba proporcionada y la compilación de producción. Si el entorno tiene Bash disponible, `bash public-tests/check.sh` ejecuta una comprobación estructural adicional. La corrida verde de GitHub Actions es la evidencia técnica del arranque.
 
 ## Flujo de trabajo del curso
 
-1. Conserva este repositorio como tu proyecto personal y crea un repositorio privado en GitHub.
+1. Conserva este repositorio como el proyecto del equipo y usa el repositorio privado común en GitHub.
 2. Completa únicamente los entregables de la actividad de la semana.
 3. Haz cambios pequeños y descriptivos; no borres lo que ya funciona.
 4. Ejecuta la verificación local y espera que GitHub Actions termine en verde.

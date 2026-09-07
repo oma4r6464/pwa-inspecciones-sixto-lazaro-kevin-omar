@@ -1,9 +1,5 @@
 # ADR-001 — Estrategia de aplicación
 
-> Completa esta decisión en Semana 1. Una decisión no es solo una preferencia: relaciona restricciones, alternativas, consecuencias y una forma de validación.
-
-# ADR-001 — Estrategia de aplicación
-
 ## Estado
 
 Aceptada — 4 de septiembre de 2026.
@@ -12,7 +8,7 @@ Aceptada — 4 de septiembre de 2026.
 
 El proyecto es una aplicación para registrar inspecciones de laboratorio,
 usada por técnicos que a veces trabajan en zonas con conectividad
-intermitente  y frecuentemente desde dispositivos móviles mientras
+intermitente y frecuentemente desde dispositivos móviles mientras
 recorren las instalaciones. Todos los datos manejados son sintéticos,
 sin información real de personas ni instituciones. El proyecto se
 desarrolla dentro de una materia de 14 semanas con un equipo pequeño de
@@ -93,6 +89,8 @@ Esta decisión se validará revisando que, en semanas futuras, el
 escenario B (conectividad intermitente) quede resuelto agregando
 service worker y sincronización sobre la misma base de Next.js, sin
 haber requerido reescribir la aplicación en otra tecnología. También se
-verificará con `make verify && bash public-tests/check.sh` que la
-instalación siga siendo reproducible en cada entrega.
+verificará con el flujo actual del proyecto (`npm run verify`,
+`npm test`, `npm run build` y, cuando el entorno lo permita,
+`bash public-tests/check.sh`) que la instalación siga siendo
+reproducible en cada entrega.
 
