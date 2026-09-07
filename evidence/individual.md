@@ -3,13 +3,10 @@
 Repositorio privado del equipo:
 https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar
 
-SHA final del equipo: [PEGAR AQUÍ el resultado de `git rev-parse HEAD`
-después del último push — el mismo SHA para los 4 integrantes]
+SHA final del equipo: se registra en Classroom después del último push,
+usando el mismo commit del equipo.
 
 ---
-
-
-
 - Nombre: Kevin Omar Sixto Lázaro
 - Mi contribución concreta (con enlace a archivo, commit o revisión):
   Configuré el proyecto localmente (`npm ci`, `npm run dev`), creé el
@@ -82,32 +79,42 @@ después del último push — el mismo SHA para los 4 integrantes]
 
 ---
 
-- Nombre: [NOMBRE DEL INTEGRANTE 3]
+- Nombre: Samuel Jonathan Trujillo Bolaños
 - Mi contribución concreta (con enlace a archivo, commit o revisión):
-  
-- Decisión que puedo explicar:
-  
-- Comando o prueba que ejecuté y resultado real:
-  
-- Qué comprueba esta prueba y qué no:
-  
-- Limitación que encontré:
-  
-- Uso de IA (herramienta, propósito, fragmentos influenciados y validación humana):
-  
+  Revisé la consistencia documental de la entrega, ajusté los criterios
+  de aceptación de Semana 1 para que coincidieran con el flujo real de
+  verificación, y agregué mi evidencia individual sin modificar la
+  configuración de GitHub Actions. También confirmé que la rama de
+  trabajo `dev` partiera de los avances más recientes del equipo.
 
----
-
-- Nombre: [NOMBRE DEL INTEGRANTE 4]
-- Mi contribución concreta (con enlace a archivo, commit o revisión):
-  
 - Decisión que puedo explicar:
-  
+  Puedo explicar por qué la estrategia PWA es adecuada para este caso:
+  permite trabajar con una sola base de código web, distribuir cambios
+  sin tiendas de aplicaciones y preparar el soporte futuro para
+  conectividad intermitente. La limitación principal es que en Semana 1
+  todavía no existe operación offline real ni sincronización local.
+
 - Comando o prueba que ejecuté y resultado real:
-  
+  Ejecuté `npm run verify`, `npm test` y `npm run build`; los comandos
+  terminaron correctamente en el entorno local. La validación completa
+  también debe confirmarse con la corrida de GitHub Actions del commit
+  final que se entregue.
+
 - Qué comprueba esta prueba y qué no:
-  
+  Comprueba que la estructura requerida exista, que la prueba del
+  starter pase y que la aplicación compile. No califica por sí sola la
+  calidad del análisis en `docs/requirements.md` ni en
+  `docs/decision-record.md`, y tampoco demuestra que las funciones
+  futuras como guardado, edición real, autenticación u operación offline
+  ya estén implementadas.
+
 - Limitación que encontré:
-  
+  La entrega actual corresponde al alcance documental y de arranque de
+  Semana 1. Las funciones marcadas como producto futuro quedan
+  documentadas, pero no implementadas todavía.
+
 - Uso de IA (herramienta, propósito, fragmentos influenciados y validación humana):
-  
+  Usé una herramienta de apoyo asistido para revisar redacción,
+  consistencia documental y resultados de verificación. Validé el
+  contenido contrastándolo con la consigna, los archivos del proyecto y
+  los comandos ejecutados antes de dejarlo como evidencia.
