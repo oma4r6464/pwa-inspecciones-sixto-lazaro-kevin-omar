@@ -16,6 +16,7 @@ usando el mismo commit del equipo.
   (https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/blob/main/docs/requirements.md)
   y `docs/decision-record.md`
   (https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/blob/main/docs/decision-record.md).
+  Commit de referencia: https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/commit/f5cfff5503b2250474400242bcb66165edfb446c.
 
 - Decisión que puedo explicar:
   Elegí PWA sobre web tradicional, app nativa y multiplataforma porque
@@ -66,6 +67,7 @@ usando el mismo commit del equipo.
 - Nombre: Armando Valerio Salmeron
 - Mi contribución concreta (con enlace a archivo, commit o revisión):
   Revisé la documentación y amplié los requisitos en `docs/requirements.md`. Agregué el Escenario C (Auditoría administrativa) para cubrir el uso desde escritorio por un coordinador, e incorporé el requisito RF-06 (Edición de inspección) contemplando la posibilidad de corregir errores de captura durante las primeras 24 horas.
+  Commit de referencia: https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/commit/66c7f57b5b3183180817122d6aec10fe958c4917.
 - Decisión que puedo explicar:
   Estoy de acuerdo con la elección de PWA porque permite que el desarrollo sea más rápido con Next.js (una sola base de código en lugar de dos apps nativas) y nos dará la base para agregar el soporte sin conexión más adelante usando un Service Worker.
 - Comando o prueba que ejecuté y resultado real:
@@ -86,6 +88,7 @@ usando el mismo commit del equipo.
   verificación, y agregué mi evidencia individual sin modificar la
   configuración de GitHub Actions. También confirmé que la rama de
   trabajo `dev` partiera de los avances más recientes del equipo.
+  Commit de referencia: https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/commit/76b00c3b2d73a7ff73ef5409ba52f768bf483f0b.
 
 - Decisión que puedo explicar:
   Puedo explicar por qué la estrategia PWA es adecuada para este caso:
