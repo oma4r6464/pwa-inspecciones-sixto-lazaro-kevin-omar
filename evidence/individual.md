@@ -7,9 +7,6 @@ SHA final del equipo: se registra en Classroom después del último push,
 usando el mismo commit del equipo.
 
 ---
-
-
-
 - Nombre: Kevin Omar Sixto Lázaro
 - Mi contribución concreta (con enlace a archivo, commit o revisión):
   Configuré el proyecto localmente (`npm ci`, `npm run dev`), creé el
