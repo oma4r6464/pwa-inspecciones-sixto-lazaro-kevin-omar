@@ -121,3 +121,58 @@ usando el mismo commit del equipo.
   consistencia documental y resultados de verificación. Validé el
   contenido contrastándolo con la consigna, los archivos del proyecto y
   los comandos ejecutados antes de dejarlo como evidencia.
+
+---
+
+## Semana 2 — Samuel Jonathan Trujillo Bolaños
+
+- Commit SHA de implementación:
+  1a0ca6ca51b8c12839445e5c98a43663c5338bf1.
+
+- Mi contribución concreta:
+  Implementé el shell instalable de Semana 2 con manifest web, iconos,
+  metadata PWA en el layout, navegación principal, resumen operativo,
+  listado de inspecciones sintéticas y estados de carga, error y vacío
+  en `src/components/app-shell.tsx`. También agregué
+  `tests/manifest.spec.ts` y actualicé la documentación de ejecución,
+  verificación y entrega en `README.md`.
+
+- Decisión técnica que puedo explicar:
+  Separé la interfaz principal en un componente `AppShell` con el tipo
+  `AppShellState` para que los estados críticos sean explícitos,
+  probables y fáciles de extender cuando después exista carga real de
+  datos. Mantengo el componente como renderizado de servidor porque el
+  incremento actual solo usa datos sintéticos locales y todavía no
+  requiere estado interactivo del navegador.
+
+- Comando o prueba que ejecuté y resultado real:
+  Ejecuté `npm ci`, `npm run verify`, `npm test` y `npm run build`.
+  `npm run verify` terminó con "Starter verificable: PASS";
+  `npm test` terminó con "manifest.spec.ts: PASS" y
+  "starter.spec.mjs: PASS"; `npm run build` compiló correctamente la
+  ruta `/`. En este entorno `make verify` no está disponible porque no
+  existe el comando `make`, así que usé el equivalente exacto del
+  Makefile: `npm run verify`.
+
+- Qué comprueba esta prueba y qué no:
+  La prueba de manifest comprueba que `public/manifest.webmanifest`
+  tenga nombre, inicio, alcance, modo standalone, colores, idioma e
+  iconos existentes; también valida que `layout.tsx` enlace el manifest
+  y que el shell incluya navegación y estados de carga, error y vacío.
+  No comprueba instalación real en un dispositivo ni comportamiento
+  offline, porque esos puntos todavía quedan fuera del alcance de esta
+  semana.
+
+- Limitación que encontré:
+  `npm ci` reportó vulnerabilidades heredadas de dependencias del stack.
+  No ejecuté `npm audit fix --force` porque podría introducir cambios
+  incompatibles o alterar versiones sin que la actividad lo solicitara.
+  También queda pendiente implementar service worker, cache offline,
+  persistencia y sincronización.
+
+- Uso de IA (herramienta, propósito, fragmentos influenciados y validación humana):
+  Usé un asistente de desarrollo con IA para apoyar la revisión de la
+  consigna, proponer estructura de pruebas y revisar consistencia de la
+  documentación. Validé manualmente cada cambio contra los archivos del
+  proyecto, ejecuté los comandos de verificación y descarté modificar
+  GitHub Actions para respetar las reglas de trabajo del repositorio.
