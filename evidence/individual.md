@@ -120,3 +120,20 @@ SHA final del equipo: 239223c5b40e01abdaab87bbc65ad133f0bbd4f4.
   consistencia documental y resultados de verificación. Validé el
   contenido contrastándolo con la consigna, los archivos del proyecto y
   los comandos ejecutados antes de dejarlo como evidencia.
+
+---
+
+- Nombre: Persona 1 (Encargado de Configuración PWA - Semana 2)
+- Mi contribución concreta (con enlace a archivo, commit o revisión):
+  Creé el archivo `public/manifest.webmanifest` incluyendo nombre, colores de tema/fondo, display y el icono SVG.
+  También modifiqué `src/app/layout.tsx` para inyectar los metadatos necesarios (links al manifest, meta tags de `theme-color`, iconos para Apple). Actualicé el `README.md` indicando cómo verificar la PWA.
+- Decisión que puedo explicar:
+  Se optó por usar un único archivo `icon.svg` referenciado con distintos tamaños en el `manifest.webmanifest` para simplificar la gestión de assets y asegurar que el icono se vea nítido en cualquier resolución. El color de tema se definió en `#005a9c` acorde con un estilo sobrio para aplicaciones de laboratorio.
+- Comando o prueba que ejecuté y resultado real:
+  Se ejecutó `npm run dev` y se comprobó manualmente desde Chrome DevTools (pestaña "Application > Manifest") que los metadatos cargaran correctamente. También se validó que `npm run build` terminara sin errores de metadatos.
+- Qué comprueba esta prueba y qué no:
+  Comprueba que la aplicación levante y el navegador reconozca el manifest de forma correcta. No comprueba mediante tests automatizados (ej. Playwright) que el manifest tenga las keys correctas, eso se implementará en el test E2E posteriormente.
+- Limitación que encontré:
+  Al usar SVGs, navegadores antiguos en iOS podrían tener problemas si se agrega a la pantalla de inicio; en producción final convendría exportar PNGs en distintos tamaños.
+- Uso de IA (herramienta, propósito, fragmentos influenciados y validación humana):
+  Usé Antigravity (IA) para redactar el JSON base del manifest y actualizar el layout con las nuevas convenciones de metadatos de Next.js 14. Validé los metadatos generados abriendo la vista de Application en Chrome.

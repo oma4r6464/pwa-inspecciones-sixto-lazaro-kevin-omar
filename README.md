@@ -20,6 +20,7 @@ npm run dev
 ```
 
 Abre <http://localhost:3000>. Debes ver la pantalla inicial de inspecciones con datos sintéticos.
+Para verificar el avance de la **Semana 2** (Configuración de Manifest de PWA por Persona 1), abre las herramientas de desarrollo de Chrome (DevTools) > Application > Manifest y comprueba que los datos y el icono carguen, o revisa el icono de instalación en la barra de direcciones.
 
 Antes de entregar ejecuta:
 
