@@ -123,7 +123,7 @@ SHA final del equipo: 239223c5b40e01abdaab87bbc65ad133f0bbd4f4.
 
 ---
 
-- Nombre: Persona 1 (Encargado de Configuración PWA - Semana 2)
+- Nombre: Armando Valerio Salmeron (Encargado de Configuración PWA - Semana 2)
 - Mi contribución concreta (con enlace a archivo, commit o revisión):
   Creé el archivo `public/manifest.webmanifest` incluyendo nombre, colores de tema/fondo, display y el icono SVG.
   También modifiqué `src/app/layout.tsx` para inyectar los metadatos necesarios (links al manifest, meta tags de `theme-color`, iconos para Apple). Actualicé el `README.md` indicando cómo verificar la PWA.
