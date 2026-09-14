@@ -19,8 +19,15 @@ npm ci
 npm run dev
 ```
 
-Abre <http://localhost:3000>. Debes ver la pantalla inicial de inspecciones con datos sintéticos.
-Para verificar el avance de la **Semana 2** (Configuración de Manifest de PWA por Persona 1), abre las herramientas de desarrollo de Chrome (DevTools) > Application > Manifest y comprueba que los datos y el icono carguen, o revisa el icono de instalación en la barra de direcciones.
+Abre <http://localhost:3000>. Debes ver la pantalla inicial de inspecciones con datos sintéticos y el **App Shell** instalable.
+Para verificar el avance de la **Semana 2**:
+- **Manifest PWA**: Abre Chrome DevTools > Application > Manifest y comprueba los metadatos y el icono SVG.
+- **App Shell y Navegación**: Menú interactivo responsivo (móvil y escritorio) con enlaces a Inicio e Inspecciones.
+- **Estados de interfaz**:
+  - *Carga*: Estado visible durante la simulación de lectura inicial y guardado (`LoadingState`).
+  - *Éxito*: Notificación toast animada tras agregar una inspección sintética.
+  - *Error con reintento*: Alternancia determinista de fallo en segundo intento con botón "Reintentar" (`ErrorState`).
+  - *Vacío*: Botón "Vaciar lista" para visualizar `EmptyState` y botón para "Restaurar datos sintéticos".
 
 Antes de entregar ejecuta:
 
@@ -30,7 +37,8 @@ npm test
 npm run build
 ```
 
-`npm run verify` genera `reports/verification.json`. `npm test` y `npm run build` validan la prueba proporcionada y la compilación de producción. Si el entorno tiene Bash disponible, `bash public-tests/check.sh` ejecuta una comprobación estructural adicional. La corrida verde de GitHub Actions es la evidencia técnica del arranque.
+`npm run verify` comprueba la presencia de artefactos requeridos y genera `reports/verification.json`. `npm test` ejecuta tanto el test de starter (`tests/starter.spec.mjs`) como la suite de validación de manifest y componentes (`tests/manifest.spec.ts`). `npm run build` valida la compilación optimizada en producción. Si el entorno tiene Bash disponible, `bash public-tests/check.sh` ejecuta una comprobación estructural adicional y de ausencia de secretos. La corrida verde de GitHub Actions es la evidencia técnica del arranque.
+
 
 ## Flujo de trabajo del curso
 

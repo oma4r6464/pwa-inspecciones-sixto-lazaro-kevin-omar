@@ -10,3 +10,7 @@ assert.equal(packageJson.scripts.build, "next build");
 assert.match(page, /Inspecciones de laboratorio/);
 assert.match(page, /sintéticos/i);
 console.log("starter.spec.mjs: PASS");
+
+// Ejecutar prueba crítica de la Semana 2: tests/manifest.spec.ts
+await import("../scripts/run-spec.mjs");
+
