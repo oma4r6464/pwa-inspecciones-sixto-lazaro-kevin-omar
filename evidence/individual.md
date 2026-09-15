@@ -3,7 +3,7 @@
 Repositorio privado del equipo:
 https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar
 
-SHA final del equipo: 239223c5b40e01abdaab87bbc65ad133f0bbd4f4.
+SHA final del equipo: se fija en Classroom con el último commit entregado en `main`.
 
 ---
 - Nombre: Kevin Omar Sixto Lázaro
@@ -120,6 +120,60 @@ SHA final del equipo: 239223c5b40e01abdaab87bbc65ad133f0bbd4f4.
   consistencia documental y resultados de verificación. Validé el
   contenido contrastándolo con la consigna, los archivos del proyecto y
   los comandos ejecutados antes de dejarlo como evidencia.
+
+---
+
+- Nombre: Samuel Jonathan Trujillo Bolaños (Revisión final y evidencia - Semana 2)
+- Mi contribución concreta (con enlace a archivo, commit o revisión):
+  Revisé el entregable de Semana 2 sobre `main` y reforcé los puntos
+  que podían afectar una revisión privada: agregué `id`, `scope`,
+  `lang`, `orientation`, categorías y propósito maskable al
+  `public/manifest.webmanifest`; alineé `src/app/layout.tsx` con los
+  metadatos del shell instalable; dejé visible en `src/app/page.tsx`
+  que la captura es únicamente de datos sintéticos; amplié
+  `tests/manifest.spec.ts` para validar esos campos críticos; y
+  documenté en `README.md` el flujo `npm ci`, `npm run verify`,
+  `npm test`, `npm run build` y el equivalente exacto de `make verify`.
+  Commit de referencia:
+  https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/commit/93ade3480e7e5847e915567408790e958ec6d3f1.
+
+- Decisión que puedo explicar:
+  Se mantuvo el incremento dentro del alcance del shell instalable sin
+  modificar GitHub Actions ni los checks públicos. El manifest se
+  fortaleció con campos que ayudan a que la PWA sea reconocible como
+  instalable, y las pruebas se ampliaron para detectar regresiones en
+  manifest, layout, estados de interfaz y restricción de datos
+  sintéticos.
+
+- Comando o prueba que ejecuté y resultado real:
+  Ejecuté `npm run verify`, `npm test` y `npm run build` en `main`.
+  `npm run verify` terminó con "Starter verificable: PASS";
+  `npm test` terminó con "starter.spec.mjs: PASS" y
+  "manifest.spec.ts: PASS"; `npm run build` compiló correctamente la
+  ruta `/`. `make verify` no está disponible en este Windows porque el
+  comando `make` no está instalado, por eso se documentó y ejecutó el
+  equivalente exacto definido por el Makefile: `npm run verify`.
+
+- Qué comprueba esta prueba y qué no:
+  Comprueba que los artefactos obligatorios existan, que el manifest
+  tenga campos esenciales de instalación, que el layout publique el
+  manifest y que la página use el App Shell con estados de carga, error
+  y vacío. No comprueba instalación física en un teléfono, operación
+  offline real, service worker, persistencia ni sincronización.
+
+- Limitación que encontré:
+  La app todavía conserva inspecciones nuevas solo en memoria durante la
+  sesión de demostración. También queda pendiente revisar
+  vulnerabilidades reportadas por `npm ci` con una actualización
+  controlada de dependencias, evitando `npm audit fix --force` porque
+  puede introducir cambios incompatibles.
+
+- Uso de IA (herramienta, propósito, fragmentos influenciados y validación humana):
+  Usé un asistente de desarrollo con IA para apoyar la auditoría del
+  entregable, ordenar criterios de prueba y revisar consistencia entre
+  consigna, código y documentación. Validé manualmente los cambios en
+  los archivos del repositorio y ejecuté las pruebas indicadas antes de
+  dejar esta evidencia.
 
 ---
 
