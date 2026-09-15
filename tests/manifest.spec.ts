@@ -29,16 +29,31 @@ assert.equal(typeof manifest.name, "string", "manifest debe tener un 'name'");
 assert.ok(manifest.name.length > 0, "'name' no puede estar vacío");
 assert.equal(typeof manifest.short_name, "string", "manifest debe tener un 'short_name'");
 assert.equal(manifest.display, "standalone", "manifest display debe ser 'standalone'");
-assert.ok(manifest.start_url, "manifest debe tener 'start_url'");
+assert.equal(manifest.id, "/", "manifest debe declarar id raíz");
+assert.equal(manifest.start_url, "/", "manifest debe iniciar en la raíz");
+assert.equal(manifest.scope, "/", "manifest debe limitar scope a la raíz");
+assert.equal(manifest.lang, "es-MX", "manifest debe declarar idioma es-MX");
+assert.equal(manifest.orientation, "portrait-primary", "manifest debe declarar orientación base");
 assert.ok(manifest.theme_color, "manifest debe tener 'theme_color'");
 assert.ok(manifest.background_color, "manifest debe tener 'background_color'");
+assert.ok(Array.isArray(manifest.categories), "manifest debe declarar categorias");
+assert.ok(manifest.categories.includes("education"), "manifest debe categorizarse como education");
 assert.ok(Array.isArray(manifest.icons), "manifest debe contener un arreglo de 'icons'");
 assert.ok(manifest.icons.length > 0, "manifest debe contener al menos un icono");
+assert.ok(
+  manifest.icons.some((icon: any) => icon.sizes === "192x192"),
+  "manifest debe incluir icono 192x192"
+);
+assert.ok(
+  manifest.icons.some((icon: any) => icon.sizes === "512x512"),
+  "manifest debe incluir icono 512x512"
+);
 
 for (const icon of manifest.icons) {
   assert.ok(icon.src, "cada icono debe tener propiedad 'src'");
   assert.ok(icon.sizes, "cada icono debe tener propiedad 'sizes'");
   assert.ok(icon.type, "cada icono debe tener propiedad 'type'");
+  assert.match(icon.purpose ?? "", /maskable/, "cada icono debe declarar soporte maskable");
   const iconPath = resolve(root, "public", icon.src.replace(/^\//, ""));
   assert.ok(existsSync(iconPath), `El icono referenciado en manifest no existe: ${icon.src}`);
 }
@@ -64,5 +79,6 @@ assert.match(pageContent, /<AppShell>/, "page.tsx debe renderizar AppShell");
 assert.match(pageContent, /LoadingState/, "page.tsx debe integrar LoadingState");
 assert.match(pageContent, /ErrorState/, "page.tsx debe integrar ErrorState");
 assert.match(pageContent, /EmptyState/, "page.tsx debe integrar EmptyState");
+assert.match(pageContent, /no ingreses datos reales/i, "page.tsx debe advertir que solo se usan datos sinteticos");
 
 console.log("manifest.spec.ts: PASS (todas las verificaciones críticas superadas)");

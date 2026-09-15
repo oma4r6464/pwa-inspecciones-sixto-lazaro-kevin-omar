@@ -3,7 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Inspecciones de laboratorio",
-  description: "Proyecto base de Aplicaciones Web Progresivas",
+  description: "Shell instalable para inspecciones y mantenimiento de laboratorios con datos sinteticos.",
+  applicationName: "Inspecciones de laboratorio PWA",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
@@ -14,6 +15,9 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#005a9c",
+  colorScheme: "light",
+  width: "device-width",
+  initialScale: 1
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

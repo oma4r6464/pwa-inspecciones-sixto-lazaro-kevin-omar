@@ -32,12 +32,21 @@ Para verificar el avance de la **Semana 2**:
 Antes de entregar ejecuta:
 
 ```bash
+npm ci
 npm run verify
 npm test
 npm run build
 ```
 
 `npm run verify` comprueba la presencia de artefactos requeridos y genera `reports/verification.json`. `npm test` ejecuta tanto el test de starter (`tests/starter.spec.mjs`) como la suite de validación de manifest y componentes (`tests/manifest.spec.ts`). `npm run build` valida la compilación optimizada en producción. Si el entorno tiene Bash disponible, `bash public-tests/check.sh` ejecuta una comprobación estructural adicional y de ausencia de secretos. La corrida verde de GitHub Actions es la evidencia técnica del arranque.
+
+El Makefile del repositorio define `make verify` como equivalente directo
+de `npm run verify`. Si `make` no está instalado en el entorno local, se
+documenta y ejecuta el equivalente exacto:
+
+```bash
+npm run verify
+```
 
 
 ## Flujo de trabajo del curso
@@ -48,7 +57,7 @@ npm run build
 4. Ejecuta la verificación local y espera que GitHub Actions termine en verde.
 5. Entrega en Classroom la URL del repositorio, el SHA exacto evaluado, el enlace a Actions y `evidence/individual.md`.
 
-No uses datos reales de personas, laboratorios o estudiantes. Todo dato del starter es sintético.
+No uses datos reales de personas, laboratorios o estudiantes. Todo dato del starter es sintético y el formulario de demostración debe llenarse únicamente con ejemplos ficticios.
 
 ## Estructura inicial
 

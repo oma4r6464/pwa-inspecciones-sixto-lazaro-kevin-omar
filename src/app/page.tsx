@@ -145,7 +145,7 @@ export default function HomePage() {
           <h1>Inspecciones de laboratorio</h1>
           <p className="lead">
             Registro de mantenimiento para trabajar con conectividad intermitente. Los datos
-            mostrados son sintéticos.
+            mostrados y capturados en esta pantalla son sintéticos; no ingreses datos reales.
           </p>
           <span className="status">
             Estado del starter: ejecutable · App shell instalable en progreso
@@ -183,23 +183,23 @@ export default function HomePage() {
           {showForm && (
             <form className="add-inspection-form" onSubmit={handleSubmit}>
               <div className="form-row">
-                <label htmlFor="location">Ubicación *</label>
+                <label htmlFor="location">Ubicación sintética *</label>
                 <input
                   id="location"
                   type="text"
                   value={form.location}
                   onChange={(e) => setForm({ ...form, location: e.target.value })}
-                  placeholder="Laboratorio de Química"
+                  placeholder="Laboratorio Demo 01"
                 />
               </div>
               <div className="form-row">
-                <label htmlFor="inspector">Responsable</label>
+                <label htmlFor="inspector">Responsable sintético</label>
                 <input
                   id="inspector"
                   type="text"
                   value={form.inspector}
                   onChange={(e) => setForm({ ...form, inspector: e.target.value })}
-                  placeholder="Nombre del inspector"
+                  placeholder="Técnica Demo"
                 />
               </div>
               <div className="form-row">
@@ -219,7 +219,7 @@ export default function HomePage() {
                   id="summary"
                   value={form.summary}
                   onChange={(e) => setForm({ ...form, summary: e.target.value })}
-                  placeholder="Descripción breve de lo revisado"
+                  placeholder="Descripción sintética de lo revisado"
                   rows={2}
                 />
               </div>
