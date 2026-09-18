@@ -1,15 +1,7 @@
 "use client";
 
-import { ReactNode, useState } from "react";
-
-/**
- * Shell instalable de la app (Semana 2).
- *
- * Decisión: se implementa como un componente cliente porque la navegación
- * (menú hamburguesa en móvil) requiere estado local. El layout raíz
- * (src/app/layout.tsx) sigue siendo un server component; solo el shell
- * visual necesita interactividad.
- */
+import { ReactNode, useEffect, useState } from "react";
+import { applyServiceWorkerUpdate, registerServiceWorker } from "../lib/pwa/register-service-worker";
 
 const NAV_LINKS = [
   { label: "Inicio", href: "/" },
@@ -22,6 +14,15 @@ type AppShellProps = {
 
 export function AppShell({ children }: AppShellProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    registerServiceWorker((registration) => {
+      const shouldUpdate = window.confirm(
+        "Hay una nueva versión disponible. ¿Actualizar ahora?"
+      );
+      if (shouldUpdate) applyServiceWorkerUpdate(registration);
+    });
+  }, []);
 
   return (
     <div className="app-shell">

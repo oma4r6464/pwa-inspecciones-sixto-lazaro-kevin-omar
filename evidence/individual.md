@@ -209,3 +209,10 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 - Uso de IA (herramienta, propósito, fragmentos influenciados y validación humana):
   Usé Antigravity / Claude como apoyo para estructurar el componente AppShell, diseñar la lógica de alternancia de estados en el formulario y la suite de validación `tests/manifest.spec.ts`. Validé manualmente ejecutando `npm run verify`, `npm test`, `npm run build` y comprobando la interfaz y manifest en DevTools.
 
+//////////////////////////////////////////////////////////
+### Kevin Omar Sixto Lázaro — Semana 3
+- Commit: PENDIENTE (se agrega en el siguiente commit tras el push)
+- Decisión técnica: network-first para peticiones de navegación (siempre la versión más fresca si hay red, con fallback a caché y luego a "/") y cache-first con revalidación en segundo plano para assets estáticos same-origin; el service worker nuevo no se activa automáticamente — se queda en "waiting" y solo se activa cuando el usuario confirma, vía mensaje SKIP_WAITING, para no perder estado de una pestaña abierta.
+- Prueba ejecutada: verificación manual en Chrome DevTools — Application → Service Workers muestra sw.js "activated and is running"; con la casilla "Offline" marcada la app sigue renderizando completamente (header, tarjetas de inspecciones) en vez de mostrar el error de "sin conexión" del navegador.
+- Limitación: aún no hay pruebas automatizadas (tests/service-worker.spec.ts y tests/offline.spec.ts) — quedaron repartidas al equipo; tampoco hay push notifications ni background sync.
+- Uso de IA: usé Claude para diseñar la estrategia de caché, detectar y corregir un bug real (el registro nunca corría porque el evento "load" del navegador ya había disparado antes de que el useEffect de React se ejecutara), y para revisar el código antes de integrarlo.
