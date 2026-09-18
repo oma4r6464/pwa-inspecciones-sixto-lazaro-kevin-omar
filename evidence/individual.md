@@ -211,7 +211,7 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 
 //////////////////////////////////////////////////////////
 ### Kevin Omar Sixto Lázaro — Semana 3
-- Commit: PENDIENTE (se agrega en el siguiente commit tras el push)
+- Commit:  40b271ae91ae5755928b5cef20d8bcc7cdaaf792
 - Decisión técnica: network-first para peticiones de navegación (siempre la versión más fresca si hay red, con fallback a caché y luego a "/") y cache-first con revalidación en segundo plano para assets estáticos same-origin; el service worker nuevo no se activa automáticamente — se queda en "waiting" y solo se activa cuando el usuario confirma, vía mensaje SKIP_WAITING, para no perder estado de una pestaña abierta.
 - Prueba ejecutada: verificación manual en Chrome DevTools — Application → Service Workers muestra sw.js "activated and is running"; con la casilla "Offline" marcada la app sigue renderizando completamente (header, tarjetas de inspecciones) en vez de mostrar el error de "sin conexión" del navegador.
 - Limitación: aún no hay pruebas automatizadas (tests/service-worker.spec.ts y tests/offline.spec.ts) — quedaron repartidas al equipo; tampoco hay push notifications ni background sync.
