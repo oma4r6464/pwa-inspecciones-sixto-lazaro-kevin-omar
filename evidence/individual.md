@@ -216,3 +216,59 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 - Prueba ejecutada: verificación manual en Chrome DevTools — Application → Service Workers muestra sw.js "activated and is running"; con la casilla "Offline" marcada la app sigue renderizando completamente (header, tarjetas de inspecciones) en vez de mostrar el error de "sin conexión" del navegador.
 - Limitación: aún no hay pruebas automatizadas (tests/service-worker.spec.ts y tests/offline.spec.ts) — quedaron repartidas al equipo; tampoco hay push notifications ni background sync.
 - Uso de IA: usé Claude para diseñar la estrategia de caché, detectar y corregir un bug real (el registro nunca corría porque el evento "load" del navegador ya había disparado antes de que el useEffect de React se ejecutara), y para revisar el código antes de integrarlo.
+
+---
+
+### Samuel Jonathan Trujillo Bolaños — Semana 3
+- Commit de referencia:
+  25cef8ca0d0c7f17b3f70b06cf0a620e8ac05426.
+
+- Mi contribución concreta:
+  Revisé los últimos commits de `main` y los issues abiertos de Semana
+  3. Completé `docs/cache-strategy.md` con la estrategia real del
+  service worker, fallback offline, invalidación de caché, actualización
+  segura y trade-offs. También actualicé `scripts/verify.mjs` para que
+  `npm run verify` falle si falta algún artefacto obligatorio de Semana
+  3, y reforcé `README.md` con el flujo de prueba del service worker,
+  Cache Storage y modo offline.
+
+- Decisión técnica que puedo explicar:
+  Mantuve la estrategia ya implementada: navegación con network-first
+  para priorizar frescura y fallback offline, assets same-origin con
+  cache-first y revalidación en segundo plano para velocidad y
+  disponibilidad, y actualización segura mediante confirmación del
+  usuario antes de enviar `SKIP_WAITING`. No modifiqué GitHub Actions ni
+  los checks públicos; conecté la verificación desde los scripts locales
+  existentes.
+
+- Comando o prueba que ejecuté y resultado real:
+  Ejecuté `npm ci`, `npm run verify`, `npm test` y `npm run build`.
+  `npm run verify` terminó con "Starter verificable: PASS";
+  `npm test` terminó con `starter.spec.mjs: PASS`,
+  `manifest.spec.ts: PASS`, `service-worker.spec.ts: PASS` y
+  `offline.spec.ts: PASS`; `npm run build` compiló correctamente la
+  ruta `/`. `make verify` no está disponible en este Windows porque el
+  comando `make` no está instalado, así que ejecuté el equivalente
+  exacto definido en el Makefile: `npm run verify`.
+
+- Qué comprueba esta prueba y qué no:
+  Comprueba existencia de artefactos obligatorios, presencia de
+  listeners de service worker, versionado de caché, precache mínimo,
+  fallback offline, flujo de `SKIP_WAITING` y recarga segura de una sola
+  vez. No instala la PWA en un dispositivo físico ni prueba
+  sincronización en segundo plano, push notifications o persistencia
+  real de inspecciones.
+
+- Limitación que encontré:
+  `npm ci` reportó vulnerabilidades heredadas de dependencias. No
+  ejecuté `npm audit fix --force` porque puede cambiar versiones con
+  riesgo de incompatibilidad y no forma parte del alcance de esta
+  entrega. También queda pendiente una página offline dedicada; por
+  ahora el fallback seguro es `/`.
+
+- Uso de IA (herramienta, propósito, fragmentos influenciados y validación humana):
+  Usé un asistente de desarrollo con IA para apoyar la auditoría contra
+  la consigna, organizar la documentación de caché y revisar que la
+  evidencia fuera consistente con los comandos ejecutados. Validé
+  manualmente el resultado revisando los archivos del repositorio,
+  issues abiertos y salidas de verificación local.
