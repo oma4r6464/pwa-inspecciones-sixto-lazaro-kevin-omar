@@ -68,7 +68,7 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 - Límites y fallos encontrados: no hay backend, sincronización en segundo plano ni persistencia real. `npm ci` reporta vulnerabilidades heredadas y no se ejecutó `npm audit fix --force` para evitar cambios incompatibles. En este Windows no está disponible `bash`, por lo que `public-tests/check.sh` debe ejecutarse desde Bash/WSL; su equivalente local es `npm run verify`.
 - Pruebas ejecutadas: `npm ci` terminó correctamente; `npm test` terminó con `starter.spec.mjs`, `manifest.spec.ts`, `service-worker.spec.ts` y `offline.spec.ts` en PASS; `npm run verify` terminó con `Starter verificable: PASS`; `npm run build` queda como validación de compilación de producción.
 - Uso de IA: utilicé GitHub Copilot para revisar la implementación, ajustar el ciclo de vida y caché del Service Worker, ampliar las pruebas y redactar esta evidencia. Validé manualmente los cambios, ejecuté la suite local y revisé que no hubiera secretos ni datos reales.
-- Commit SHA final en `main`: `PENDIENTE_DE_INSERTAR_TRAS_MERGE`.
+- Commit SHA final del merge en `main`: `86435b83a493e2760afe788ae87e4aaebe585e58`.
 
 ---
 
