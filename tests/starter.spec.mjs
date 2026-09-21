@@ -14,3 +14,6 @@ console.log("starter.spec.mjs: PASS");
 // Ejecutar prueba crítica de la Semana 2: tests/manifest.spec.ts
 await import("../scripts/run-spec.mjs");
 
+// Ejecutar pruebas críticas de la Semana 3:
+await import("../scripts/run-service-worker-spec.mjs");
+await import("../scripts/run-offline-spec.mjs");
