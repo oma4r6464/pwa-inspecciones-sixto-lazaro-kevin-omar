@@ -29,6 +29,13 @@ Para verificar el avance de la **Semana 2**:
   - *Error con reintento*: Alternancia determinista de fallo en segundo intento con botón "Reintentar" (`ErrorState`).
   - *Vacío*: Botón "Vaciar lista" para visualizar `EmptyState` y botón para "Restaurar datos sintéticos".
 
+Para verificar el avance de la **Semana 3**:
+
+- **Service worker**: `public/sw.js` se registra desde `src/lib/pwa/register-service-worker.ts`.
+- **Caché**: la estrategia queda documentada en `docs/cache-strategy.md`.
+- **Offline**: ejecuta `npm run build && npm start`, abre DevTools > Application > Service Workers / Cache Storage, carga la app una vez, activa modo offline y recarga.
+- **Actualización segura**: si hay una versión nueva del service worker en espera, la app pide confirmación antes de enviar `SKIP_WAITING`.
+
 Antes de entregar ejecuta:
 
 ```bash
@@ -38,7 +45,7 @@ npm test
 npm run build
 ```
 
-`npm run verify` comprueba la presencia de artefactos requeridos y genera `reports/verification.json`. `npm test` ejecuta tanto el test de starter (`tests/starter.spec.mjs`) como la suite de validación de manifest y componentes (`tests/manifest.spec.ts`). `npm run build` valida la compilación optimizada en producción. Si el entorno tiene Bash disponible, `bash public-tests/check.sh` ejecuta una comprobación estructural adicional y de ausencia de secretos. La corrida verde de GitHub Actions es la evidencia técnica del arranque.
+`npm run verify` comprueba la presencia de artefactos requeridos, incluyendo los archivos de Semana 3, y genera `reports/verification.json`. `npm test` ejecuta el test de starter (`tests/starter.spec.mjs`), la suite de validación de manifest y componentes (`tests/manifest.spec.ts`), y las pruebas de service worker/offline (`tests/service-worker.spec.ts` y `tests/offline.spec.ts`). `npm run build` valida la compilación optimizada en producción. Si el entorno tiene Bash disponible, `bash public-tests/check.sh` ejecuta una comprobación estructural adicional y de ausencia de secretos. La corrida verde de GitHub Actions es la evidencia técnica del arranque.
 
 El Makefile del repositorio define `make verify` como equivalente directo
 de `npm run verify`. Si `make` no está instalado en el entorno local, se
@@ -64,6 +71,7 @@ No uses datos reales de personas, laboratorios o estudiantes. Todo dato del star
 - `src/app/`: aplicación Next.js con App Router.
 - `src/lib/data/`: datos sintéticos de inspecciones.
 - `docs/`: plantillas de documentación de la Semana 1.
+- `docs/cache-strategy.md`: decisiones de caché, fallback offline y actualización segura de Semana 3.
 - `scripts/verify.mjs`: verificación reproducible local.
 - `tests/`: prueba mínima del starter.
 
