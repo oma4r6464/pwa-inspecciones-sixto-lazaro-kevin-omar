@@ -17,6 +17,7 @@ const swContent = readFileSync(swPath, "utf8");
 // 1. register-service-worker.ts expone registerServiceWorker y applyServiceWorkerUpdate
 assert.match(registerContent, /export\s+function\s+registerServiceWorker/, "debe exportar registerServiceWorker");
 assert.match(registerContent, /export\s+function\s+applyServiceWorkerUpdate/, "debe exportar applyServiceWorkerUpdate");
+assert.match(registerContent, /process\.env\.NODE_ENV\s*!==\s*["'`]production["'`]/, "debe registrar el service worker solo en producción");
 
 // 2. Existe el fallback a OFFLINE_FALLBACK_URL en sw.js cuando falla la navegación
 assert.match(swContent, /const\s+OFFLINE_FALLBACK_URL\s*=\s*["'`]/, "debe definir OFFLINE_FALLBACK_URL");

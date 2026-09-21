@@ -32,6 +32,7 @@ function performRegistration(onUpdateAvailable?: ServiceWorkerUpdateHandler): vo
 
 export function registerServiceWorker(onUpdateAvailable?: ServiceWorkerUpdateHandler): void {
   if (typeof window === "undefined") return;
+  if (process.env.NODE_ENV !== "production") return;
   if (!("serviceWorker" in navigator)) return;
 
 

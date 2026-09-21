@@ -8,7 +8,7 @@ La estrategia de Semana 3 agrega consulta offline al shell de inspecciones de la
 
 - Archivo: `public/sw.js`.
 - Registro: `src/lib/pwa/register-service-worker.ts`.
-- Versión declarada: `SW_VERSION = "v1"`.
+- Versión declarada: `SW_VERSION = "v2"`.
 - Nombre de caché: `inspecciones-cache-${SW_VERSION}`.
 - Fallback offline: `OFFLINE_FALLBACK_URL = "/"`.
 
