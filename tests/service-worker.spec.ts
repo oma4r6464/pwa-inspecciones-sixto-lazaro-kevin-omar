@@ -14,6 +14,7 @@ const swContent = readFileSync(swPath, "utf8");
 // 1. Existe CACHE_NAME con versión (SW_VERSION)
 assert.match(swContent, /^const\s+SW_VERSION\s*=\s*["'`][^"'`]+["'`]/m, "debe definir SW_VERSION");
 assert.match(swContent, /^const\s+CACHE_NAME\s*=\s*[`"'](?:.*)\$\{SW_VERSION\}(?:.*)[`"']|^const\s+CACHE_NAME\s*=\s*[`"'](?:.*)["']\s*\+\s*SW_VERSION/m, "debe definir CACHE_NAME usando SW_VERSION");
+assert.match(swContent, /response\.ok/, "debe cachear solamente respuestas HTTP válidas");
 
 // 2. PRECACHE_URLS incluye "/", "/manifest.webmanifest", "/icon.svg"
 assert.match(swContent, /^const\s+PRECACHE_URLS\s*=\s*\[([\s\S]*?)\]/m, "debe definir PRECACHE_URLS como un arreglo");

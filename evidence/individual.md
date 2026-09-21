@@ -51,7 +51,6 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
   deliberadamente"), así que se entrega por separado en Classroom en
   vez de subirse al repositorio.
 
-- Uso de IA (herramienta, propósito, fragmentos influenciados y validación humana):
   Usé Claude (Anthropic) como asistente para: (1) guiar los comandos de
   git para inicializar y subir el repositorio, (2) redactar un borrador
   inicial de `docs/requirements.md` y `docs/decision-record.md`
@@ -60,6 +59,16 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
   contenido real del proyecto (datos de demo, estructura de carpetas),
   y ajusté el contenido antes de la entrega final. No usé IA para el
   quiz presencial.
+
+---
+
+### Jesús Emanuel Vega Medina (jesus-vegmed) — Semana 3
+
+- Decisiones técnicas: navegación con estrategia network-first y fallback a `/`; assets same-origin con cache-first y revalidación; actualización controlada mediante `SKIP_WAITING`; registro del Service Worker únicamente en producción. Todo el contenido usado por la app es sintético.
+- Límites y fallos encontrados: no hay backend, sincronización en segundo plano ni persistencia real. `npm ci` reporta vulnerabilidades heredadas y no se ejecutó `npm audit fix --force` para evitar cambios incompatibles. En este Windows no está disponible `bash`, por lo que `public-tests/check.sh` debe ejecutarse desde Bash/WSL; su equivalente local es `npm run verify`.
+- Pruebas ejecutadas: `npm ci` terminó correctamente; `npm test` terminó con `starter.spec.mjs`, `manifest.spec.ts`, `service-worker.spec.ts` y `offline.spec.ts` en PASS; `npm run verify` terminó con `Starter verificable: PASS`; `npm run build` queda como validación de compilación de producción.
+- Uso de IA: utilicé GitHub Copilot para revisar la implementación, ajustar el ciclo de vida y caché del Service Worker, ampliar las pruebas y redactar esta evidencia. Validé manualmente los cambios, ejecuté la suite local y revisé que no hubiera secretos ni datos reales.
+- Commit SHA final en `main`: `PENDIENTE_DE_INSERTAR_TRAS_MERGE`.
 
 ---
 

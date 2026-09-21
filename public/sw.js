@@ -1,4 +1,4 @@
-const SW_VERSION = "v1";
+const SW_VERSION = "v2";
 const CACHE_NAME = `inspecciones-cache-${SW_VERSION}`;
 
 // Shell mínimo necesario para que la app arranque sin red.
@@ -49,7 +49,9 @@ async function handleNavigationRequest(request) {
   try {
     const response = await fetch(request);
     const cache = await caches.open(CACHE_NAME);
-    cache.put(request, response.clone());
+    if (response && response.ok) {
+      await cache.put(request, response.clone());
+    }
     return response;
   } catch (error) {
     const cache = await caches.open(CACHE_NAME);
