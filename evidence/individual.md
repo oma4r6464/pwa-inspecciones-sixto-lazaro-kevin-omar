@@ -218,6 +218,16 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 - Uso de IA (herramienta, propósito, fragmentos influenciados y validación humana):
   Usé Antigravity / Claude como apoyo para estructurar el componente AppShell, diseñar la lógica de alternancia de estados en el formulario y la suite de validación `tests/manifest.spec.ts`. Validé manualmente ejecutando `npm run verify`, `npm test`, `npm run build` y comprobando la interfaz y manifest en DevTools.
 
+---
+
+### Kevin Omar Sixto Lázaro — Semana 04
+
+- Commit SHA de esta evidencia: `86435b83a493e2760afe788ae87e4aaebe585e58` es el SHA base disponible en este checkout; los cambios de Semana 04 quedan pendientes de commit final.
+- Decisión técnica: no persistir inspecciones sintéticas y construir errores sólo con `incidentId`, `correlationId`, `status`, `attempt` y `durationMs`. Se compararon memoria, IndexedDB cifrada y almacenamiento de servidor en `docs/security-controls.md`.
+- Prueba ejecutada: `npm test`, incluyendo `tests/security.spec.ts`, valida que valores sensibles sintéticos y propiedades desconocidas no sobrevivan al contexto técnico. Los reportes son `reports/week-04/secret-scan.json`, `reports/week-04/negative-tests.json` y `evidence/week-04/engineering.json`.
+- Limitación: no hay backend, sesión real, persistencia segura ni fotografías; todo el contenido es ficticio y la demo en memoria se pierde al recargar.
+- Uso declarado de IA: usé GitHub Copilot para revisar el alcance de Semana 04, proponer el sanitizador, redactar documentación y pruebas. Validé manualmente el resultado con `npm ci`, `npm test`, `npm run verify` y `npm run build`; no se usaron secretos ni datos reales.
+
 //////////////////////////////////////////////////////////
 ### Kevin Omar Sixto Lázaro — Semana 3
 - Commit:  40b271ae91ae5755928b5cef20d8bcc7cdaaf792

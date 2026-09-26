@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "decision": "No persistir datos de inspección; usar contexto de error sanitizado.",
+  "test": "npm test",
+  "expected": "security.spec.ts: PASS",
+  "limitations": [
+    "No hay backend ni credenciales reales.",
+    "No se usan ubicaciones, fotografías ni comentarios reales."
+  ],
+  "references": [
+    "docs/security-controls.md",
+    "reports/week-04/secret-scan.json",
+    "reports/week-04/negative-tests.json"
+  ]
+}

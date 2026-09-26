@@ -17,7 +17,13 @@ const required = [
   "src/lib/pwa/register-service-worker.ts",
   "docs/cache-strategy.md",
   "tests/service-worker.spec.ts",
-  "tests/offline.spec.ts"
+  "tests/offline.spec.ts",
+  "docs/security-controls.md",
+  "src/lib/security/safe-error.ts",
+  "tests/security.spec.ts",
+  "reports/week-04/secret-scan.json",
+  "reports/week-04/negative-tests.json",
+  "evidence/week-04/engineering.json"
 ];
 
 const missing = required.filter((file) => !existsSync(resolve(root, file)));
