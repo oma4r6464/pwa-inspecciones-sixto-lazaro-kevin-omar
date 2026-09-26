@@ -17,3 +17,6 @@ await import("../scripts/run-spec.mjs");
 // Ejecutar pruebas críticas de la Semana 3:
 await import("../scripts/run-service-worker-spec.mjs");
 await import("../scripts/run-offline-spec.mjs");
+
+// Ejecutar pruebas de la Semana 4:
+await import("./inspecciones.spec.mjs");
