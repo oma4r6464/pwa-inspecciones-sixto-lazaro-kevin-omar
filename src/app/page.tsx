@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { inspections as syntheticInspections, type Inspection, type InspectionStatus } from "../lib/data/inspections";
 import { AppShell, EmptyState, ErrorState, LoadingState } from "../components/app-shell";
 
@@ -261,6 +262,9 @@ export default function HomePage() {
                         <dd>{inspection.findings}</dd>
                       </div>
                     </dl>
+                    <Link href={`/inspecciones/${inspection.id}`} className="detail-link">
+                      Ver detalle →
+                    </Link>
                   </article>
                 ))}
               </div>
