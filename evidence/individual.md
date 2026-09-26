@@ -218,6 +218,16 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 - Uso de IA (herramienta, propósito, fragmentos influenciados y validación humana):
   Usé Antigravity / Claude como apoyo para estructurar el componente AppShell, diseñar la lógica de alternancia de estados en el formulario y la suite de validación `tests/manifest.spec.ts`. Validé manualmente ejecutando `npm run verify`, `npm test`, `npm run build` y comprobando la interfaz y manifest en DevTools.
 
+---
+
+### Kevin Omar Sixto Lázaro — Semana 04
+
+- Commit SHA de la implementación: `79c1712c6a7d1f979701c4b85e77c4f65b3568d7`.
+- Decisión técnica: no persistir inspecciones sintéticas y construir errores sólo con `incidentId`, `correlationId`, `status`, `attempt` y `durationMs`. Se compararon memoria, IndexedDB cifrada y almacenamiento de servidor en `docs/security-controls.md`.
+- Prueba ejecutada: `npm test`, incluyendo `tests/security.spec.ts`, valida que valores sensibles sintéticos y propiedades desconocidas no sobrevivan al contexto técnico. Los reportes son `reports/week-04/secret-scan.json`, `reports/week-04/negative-tests.json` y `evidence/week-04/engineering.json`.
+- Limitación: no hay backend, sesión real, persistencia segura ni fotografías; todo el contenido es ficticio y la demo en memoria se pierde al recargar.
+- Uso declarado de IA: usé GitHub Copilot para revisar el alcance de Semana 04, proponer el sanitizador, redactar documentación y pruebas. Validé manualmente el resultado con `npm ci`, `npm test`, `npm run verify` y `npm run build`; no se usaron secretos ni datos reales.
+
 //////////////////////////////////////////////////////////
 ### Kevin Omar Sixto Lázaro — Semana 3
 - Commit:  40b271ae91ae5755928b5cef20d8bcc7cdaaf792
@@ -301,3 +311,28 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 
 - **Uso de IA**:
   Utilicé Antigravity (asistente de IA) para estructurar rápidamente el cascarón del componente de React, las clases de TailwindCSS y la prueba unitaria en Node. Revisé y validé el código generado asegurándome de que compilara sin problemas, interactuando manualmente en el navegador para verificar la barra de búsqueda y simulación de errores.
+
+---
+
+### Samuel Jonathan Trujillo Bolaños — Semana 4
+
+- Commit SHA de integración:
+  Se fija con el último commit de `main` después de integrar los PR de Semana 4 y cerrar los issues.
+
+- Mi contribución concreta:
+  Integré los PR de Semana 4 sobre `main`, resolví conflictos en `tests/starter.spec.mjs` y `scripts/verify.mjs`, y completé el issue de documentación creando `docs/rendering-decision.md`. También actualicé `README.md` para explicar las rutas `/inspecciones` y `/inspecciones/[id]`, la comparación CSR/SSR, la verificación y la evidencia acumulada.
+
+- Decisión técnica que puedo explicar:
+  Se mantiene `/inspecciones` como CSR porque la vista necesita búsqueda, recarga y simulación de error en cliente. Se mantiene `/inspecciones/[id]` como SSR porque el detalle es estable, se puede resolver desde datos sintéticos locales y debe manejar IDs inexistentes con `notFound()`. La comparación queda documentada con una métrica repetible tomada de `npm run build`.
+
+- Comando o prueba que ejecuté y resultado real:
+  Ejecuté `npm run verify`, `npm test` y `npm run build` durante la integración. `npm test` terminó con PASS para pruebas acumuladas de manifest, service worker, offline, renderizado SSR y listado CSR. `npm run build` compiló `/`, `/inspecciones` y `/inspecciones/[id]`, mostrando `/inspecciones/[id]` como ruta dinámica server-rendered.
+
+- Qué comprueba esta prueba y qué no:
+  Comprueba que existen los artefactos obligatorios, que el detalle no usa `"use client"`, que maneja `notFound()`, que el listado usa `LoadingState` y que los tests acumulados siguen pasando. No mide Lighthouse en dispositivo real ni prueba un backend, porque la actividad usa datos sintéticos locales.
+
+- Limitación que encontré:
+  El listado CSR usa datos sintéticos en memoria y pierde estado al recargar. La métrica de carga usada es la salida reproducible de `next build`, no una medición de navegador en hardware físico.
+
+- Uso de IA (herramienta, propósito, fragmentos influenciados y validación humana):
+  Usé un asistente de desarrollo con IA para apoyar la resolución de conflictos, revisar la cobertura de entregables y redactar la documentación técnica. Validé manualmente los cambios revisando archivos, ejecutando pruebas y comprobando que no se modificaran GitHub Actions.

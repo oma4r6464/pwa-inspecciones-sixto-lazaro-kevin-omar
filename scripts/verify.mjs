@@ -18,8 +18,18 @@ const required = [
   "docs/cache-strategy.md",
   "tests/service-worker.spec.ts",
   "tests/offline.spec.ts",
+  "src/app/inspecciones/page.tsx",
   "src/app/inspecciones/[id]/page.tsx",
-  "tests/rendering.spec.ts"
+  "src/components/loading-state.tsx",
+  "docs/rendering-decision.md",
+  "tests/rendering.spec.ts",
+  "tests/inspecciones.spec.mjs",
+  "docs/security-controls.md",
+  "src/lib/security/safe-error.ts",
+  "tests/security.spec.ts",
+  "reports/week-04/secret-scan.json",
+  "reports/week-04/negative-tests.json",
+  "evidence/week-04/engineering.json"
 ];
 
 const missing = required.filter((file) => !existsSync(resolve(root, file)));

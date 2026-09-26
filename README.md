@@ -47,6 +47,20 @@ npm run build
 
 `npm run verify` comprueba la presencia de artefactos requeridos, incluyendo los archivos de Semana 3, y genera `reports/verification.json`. `npm test` ejecuta el test de starter (`tests/starter.spec.mjs`), la suite de validación de manifest y componentes (`tests/manifest.spec.ts`), y las pruebas de service worker/offline (`tests/service-worker.spec.ts` y `tests/offline.spec.ts`). `npm run build` valida la compilación optimizada en producción. Si el entorno tiene Bash disponible, `bash public-tests/check.sh` ejecuta una comprobación estructural adicional y de ausencia de secretos. La corrida verde de GitHub Actions es la evidencia técnica del arranque.
 
+Para Semana 04, `docs/security-controls.md` documenta la decisión de mantener
+los datos en memoria y limitar el contexto de errores a cinco campos técnicos
+en `src/lib/security/safe-error.ts`. `tests/security.spec.ts` prueba que no
+pasen datos sensibles sintéticos; los reportes reproducibles están en
+`reports/week-04/secret-scan.json`, `reports/week-04/negative-tests.json` y
+`evidence/week-04/engineering.json`.
+
+Para verificar el avance de la **Semana 4** de renderizado:
+
+- **Listado CSR**: abre `/inspecciones`; la ruta usa interacción del cliente para búsqueda, recarga y simulación de error.
+- **Detalle SSR**: abre `/inspecciones/inspection-001`; la ruta renderiza el detalle desde servidor y usa `notFound()` para IDs inexistentes.
+- **Decisión técnica**: `docs/rendering-decision.md` compara CSR vs SSR, supuestos, límites y métrica repetible de carga.
+- **Pruebas**: `npm test` ejecuta `tests/rendering.spec.ts` y `tests/inspecciones.spec.mjs` junto con las pruebas acumuladas.
+
 El Makefile del repositorio define `make verify` como equivalente directo
 de `npm run verify`. Si `make` no está instalado en el entorno local, se
 documenta y ejecuta el equivalente exacto:
@@ -54,6 +68,10 @@ documenta y ejecuta el equivalente exacto:
 ```bash
 npm run verify
 ```
+
+En Windows, el escaneo local de Semana 04 se ejecuta con PowerShell mediante
+`Get-ChildItem ... | Select-String ...`; no se usan ni se suben credenciales,
+datos personales, ubicaciones reales o fotografías reales.
 
 
 ## Flujo de trabajo del curso
@@ -72,6 +90,7 @@ No uses datos reales de personas, laboratorios o estudiantes. Todo dato del star
 - `src/lib/data/`: datos sintéticos de inspecciones.
 - `docs/`: plantillas de documentación de la Semana 1.
 - `docs/cache-strategy.md`: decisiones de caché, fallback offline y actualización segura de Semana 3.
+- `docs/rendering-decision.md`: comparación CSR/SSR, estados y métrica repetible de Semana 4.
 - `scripts/verify.mjs`: verificación reproducible local.
 - `tests/`: prueba mínima del starter.
 
