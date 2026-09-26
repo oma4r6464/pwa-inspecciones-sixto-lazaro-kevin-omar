@@ -222,7 +222,7 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 
 ### Kevin Omar Sixto Lázaro — Semana 04
 
-- Commit SHA de esta evidencia: `86435b83a493e2760afe788ae87e4aaebe585e58` es el SHA base disponible en este checkout; los cambios de Semana 04 quedan pendientes de commit final.
+- Commit SHA de la implementación: `79c1712c6a7d1f979701c4b85e77c4f65b3568d7`.
 - Decisión técnica: no persistir inspecciones sintéticas y construir errores sólo con `incidentId`, `correlationId`, `status`, `attempt` y `durationMs`. Se compararon memoria, IndexedDB cifrada y almacenamiento de servidor en `docs/security-controls.md`.
 - Prueba ejecutada: `npm test`, incluyendo `tests/security.spec.ts`, valida que valores sensibles sintéticos y propiedades desconocidas no sobrevivan al contexto técnico. Los reportes son `reports/week-04/secret-scan.json`, `reports/week-04/negative-tests.json` y `evidence/week-04/engineering.json`.
 - Limitación: no hay backend, sesión real, persistencia segura ni fotografías; todo el contenido es ficticio y la demo en memoria se pierde al recargar.
