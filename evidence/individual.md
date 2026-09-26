@@ -281,3 +281,23 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
   evidencia fuera consistente con los comandos ejecutados. Validé
   manualmente el resultado revisando los archivos del repositorio,
   issues abiertos y salidas de verificación local.
+
+---
+
+### Armando Valerio Salmeron — Semana 4
+
+- **Mi contribución concreta**:
+  Implementé la ruta CSR `/inspecciones` y el componente interactivo `LoadingState`. Añadí controles para filtrar las inspecciones por nombre e inspector, y botones para recargar o simular fallos, probando la responsividad del UI. También creé `tests/inspecciones.spec.mjs` y lo integré a `tests/starter.spec.mjs` para validar la existencia de la ruta y de los estados críticos.
+  Commit de referencia: `81c559d`
+
+- **Decisión técnica que puedo explicar**:
+  Elegí renderizado del lado del cliente (CSR usando `"use client"`) para la ruta de listado porque requería alta interactividad (filtrado rápido, simulación de error y recarga). Con CSR obtenemos transiciones muy ágiles al interactuar, devolviendo inmediatamente el `LoadingState` mientras simulamos la obtención de los datos.
+
+- **Prueba ejecutada y resultado**:
+  Ejecuté `npm test`, resultando en PASS tanto para los tests anteriores como para el nuevo `inspecciones.spec.mjs`. También ejecuté `npm run build` donde Next.js compiló de manera exitosa todas las rutas, demostrando que no existen errores de *hydration mismatch* entre el servidor y el cliente.
+
+- **Limitación que encontré**:
+  Como el requerimiento prohíbe datos reales, la vista actualmente utiliza datos sintéticos generados en memoria (`FAKE_INSPECTIONS`). Si se recarga la página, cualquier estado modificado o filtrado se pierde. La resiliencia offline de estos datos es un pendiente a mejorar.
+
+- **Uso de IA**:
+  Utilicé Antigravity (asistente de IA) para estructurar rápidamente el cascarón del componente de React, las clases de TailwindCSS y la prueba unitaria en Node. Revisé y validé el código generado asegurándome de que compilara sin problemas, interactuando manualmente en el navegador para verificar la barra de búsqueda y simulación de errores.
