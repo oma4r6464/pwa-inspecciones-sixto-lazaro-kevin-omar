@@ -222,11 +222,73 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 
 ### Kevin Omar Sixto Lázaro — Semana 04
 
-- Commit SHA de la implementación: `79c1712c6a7d1f979701c4b85e77c4f65b3568d7`.
-- Decisión técnica: no persistir inspecciones sintéticas y construir errores sólo con `incidentId`, `correlationId`, `status`, `attempt` y `durationMs`. Se compararon memoria, IndexedDB cifrada y almacenamiento de servidor en `docs/security-controls.md`.
-- Prueba ejecutada: `npm test`, incluyendo `tests/security.spec.ts`, valida que valores sensibles sintéticos y propiedades desconocidas no sobrevivan al contexto técnico. Los reportes son `reports/week-04/secret-scan.json`, `reports/week-04/negative-tests.json` y `evidence/week-04/engineering.json`.
-- Limitación: no hay backend, sesión real, persistencia segura ni fotografías; todo el contenido es ficticio y la demo en memoria se pierde al recargar.
-- Uso declarado de IA: usé GitHub Copilot para revisar el alcance de Semana 04, proponer el sanitizador, redactar documentación y pruebas. Validé manualmente el resultado con `npm ci`, `npm test`, `npm run verify` y `npm run build`; no se usaron secretos ni datos reales.
+- Commit SHA de la implementación:
+  `6b93c16ba453fe104c022baa4d4a4591badcfbc0`.
+
+- Mi contribución concreta:
+  Implementé la ruta SSR `src/app/inspecciones/[id]/page.tsx` para el
+  detalle de inspección. La ruta lee los datos sintéticos desde
+  `src/lib/data/inspections.ts`, genera metadatos con
+  `generateMetadata`, muestra ubicación, responsable, fecha, estado,
+  hallazgos y resumen, y usa `notFound()` cuando el identificador no
+  existe.
+
+- Decisión técnica:
+  Elegí SSR para el detalle porque la información es estable y puede
+  entregarse desde servidor sin depender de interacción del cliente. Así
+  se evita hydration mismatch y se deja el detalle disponible como HTML
+  renderizado bajo demanda.
+
+- Prueba ejecutada:
+  `npm test`, incluyendo `tests/rendering.spec.ts`, valida que la ruta
+  de detalle exista, no declare `"use client"`, use `notFound()` y no
+  haga `fetch()` a servicios externos. También se validó con
+  `npm run build`, donde `/inspecciones/[id]` aparece como ruta dinámica
+  server-rendered.
+
+- Limitación:
+  El detalle todavía depende de datos sintéticos locales; no hay backend,
+  persistencia real ni medición en dispositivo físico.
+
+- Uso declarado de IA:
+  Usé apoyo de IA para revisar estructura de la ruta SSR, metadatos y
+  criterios de prueba. Validé manualmente el resultado con los comandos
+  de verificación y revisando que no hubiera datos reales ni secretos.
+
+---
+
+### Jesús Emanuel Vega Medina — Semana 04
+
+- Commit SHA de la implementación:
+  `79c1712c417378623a6bda51e9a71e9423e2680e`.
+
+- Mi contribución concreta:
+  Agregué controles de seguridad de Semana 4: `docs/security-controls.md`,
+  `src/lib/security/safe-error.ts`, `tests/security.spec.ts`, reportes
+  reproducibles en `reports/week-04/` y evidencia técnica en
+  `evidence/week-04/engineering.json`.
+
+- Decisión técnica:
+  No persistir inspecciones sintéticas y sanitizar el contexto de error
+  a cinco campos técnicos (`incidentId`, `correlationId`, `status`,
+  `attempt`, `durationMs`). Esta decisión evita filtrar datos sensibles
+  y mantiene la demo dentro del alcance de datos sintéticos.
+
+- Prueba ejecutada:
+  `npm test`, incluyendo `tests/security.spec.ts`, valida que valores
+  sensibles sintéticos y propiedades desconocidas no sobrevivan al
+  contexto técnico. También se ejecutaron `npm run verify` y
+  `npm run build`.
+
+- Limitación:
+  No hay backend, sesión real, persistencia segura ni fotografías; todo
+  el contenido es ficticio y la demo en memoria se pierde al recargar.
+
+- Uso declarado de IA:
+  Usé GitHub Copilot para revisar el alcance de Semana 04, proponer el
+  sanitizador, redactar documentación y pruebas. Validé manualmente el
+  resultado con `npm ci`, `npm test`, `npm run verify` y `npm run build`;
+  no se usaron secretos ni datos reales.
 
 //////////////////////////////////////////////////////////
 ### Kevin Omar Sixto Lázaro — Semana 3
@@ -317,7 +379,7 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 ### Samuel Jonathan Trujillo Bolaños — Semana 4
 
 - Commit SHA de integración:
-  Se fija con el último commit de `main` después de integrar los PR de Semana 4 y cerrar los issues.
+  `09c71da28b18e85987f38ecf7d7da5cdccff6f07`.
 
 - Mi contribución concreta:
   Integré los PR de Semana 4 sobre `main`, resolví conflictos en `tests/starter.spec.mjs` y `scripts/verify.mjs`, y completé el issue de documentación creando `docs/rendering-decision.md`. También actualicé `README.md` para explicar las rutas `/inspecciones` y `/inspecciones/[id]`, la comparación CSR/SSR, la verificación y la evidencia acumulada.
