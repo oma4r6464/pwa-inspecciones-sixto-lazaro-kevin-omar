@@ -23,3 +23,6 @@ await import("../scripts/run-rendering-spec.mjs");
 
 // Ejecutar prueba crítica de la Semana 4: listado CSR
 await import("./inspecciones.spec.mjs");
+
+// Ejecutar prueba de sincronización offline
+await import("../scripts/run-sync-spec.mjs");
