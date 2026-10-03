@@ -6,6 +6,15 @@ export interface SyncMetadata {
   attempts: number;
   lastAttempt?: number;
   error?: string;
+  // Semana 5: política de conflictos y reintentos (todos opcionales por compatibilidad)
+  /** Versión local monotónica de la inspección (1 al crearla, +1 por cada edición). */
+  version?: number;
+  /** Mayor versión del lado remoto ya procesada; sirve para descartar respuestas repetidas o fuera de orden. */
+  lastRemoteVersion?: number;
+  /** Momento (ms epoch) a partir del cual se puede reintentar un FAILED. */
+  nextAttemptAt?: number;
+  /** false cuando el fallo es permanente o se agotaron los intentos. */
+  retryable?: boolean;
 }
 
 // Datos sintéticos para la inspección
