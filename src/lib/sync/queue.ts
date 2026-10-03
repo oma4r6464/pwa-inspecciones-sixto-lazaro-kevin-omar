@@ -1,174 +1,82 @@
-import {
-  DB_NAME,
-  DB_VERSION,
-  STORE_NAME,
-  PendingInspection,
-  InspectionData,
-  SyncStatus,
-} from "../storage/schema";
+import type { InspectionRecord, QueuedInspection } from "../storage/schema";
 
-/**
- * Abre o crea la base de datos de IndexedDB.
- */
-function openDatabase(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
-    // Si estamos en un entorno donde no hay IndexedDB (ej. Node test sin mock real), fallamos limpiamente o devolvemos un mock.
-    if (typeof indexedDB === "undefined") {
-      return reject(new Error("IndexedDB no está disponible en este entorno."));
-    }
+export type SyncSender = (inspection: InspectionRecord) => Promise<void>;
 
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
+export type QueueStorage = {
+  load(): QueuedInspection[];
+  save(items: QueuedInspection[]): void;
+};
 
-    request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        // Usamos 'id' como la llave primaria
-        db.createObjectStore(STORE_NAME, { keyPath: "id" });
-      }
-    };
+export class MemoryQueueStorage implements QueueStorage {
+  private items: QueuedInspection[] = [];
 
-    request.onsuccess = () => {
-      resolve(request.result);
-    };
+  load(): QueuedInspection[] {
+    return this.items.map((item) => ({ ...item, payload: { ...item.payload } }));
+  }
 
-    request.onerror = () => {
-      reject(request.error);
-    };
-  });
+  save(items: QueuedInspection[]): void {
+    this.items = items.map((item) => ({ ...item, payload: { ...item.payload } }));
+  }
 }
 
-/**
- * Cola idempotente para sincronizar inspecciones.
- */
-export class SyncQueue {
-  /**
-   * Añade una inspección a la cola usando una llave estable (id).
-   * Si ya existe una inspección con ese ID, la ignora (idempotencia)
-   * o si está en estado FAILED, la actualiza a PENDING para reintento.
-   */
-  static async enqueue(
-    id: string,
-    data: InspectionData
-  ): Promise<PendingInspection> {
-    const db = await openDatabase();
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction(STORE_NAME, "readwrite");
-      const store = transaction.objectStore(STORE_NAME);
+export class InspectionSyncQueue {
+  private readonly storage: QueueStorage;
+  private readonly maxRetries: number;
 
-      const getRequest = store.get(id);
-
-      getRequest.onsuccess = () => {
-        const existingRecord = getRequest.result as PendingInspection | undefined;
-        const now = Date.now();
-
-        if (existingRecord) {
-          // Si ya existe y está pendiente, en proceso, o sincronizado, devolvemos sin duplicar.
-          if (
-            existingRecord.status === "PENDING" ||
-            existingRecord.status === "IN_PROGRESS" ||
-            existingRecord.status === "SYNCED"
-          ) {
-            resolve(existingRecord);
-            return;
-          }
-          // Si está fallida, permitimos encolarla de nuevo (reintento manual/automático)
-          const updatedRecord: PendingInspection = {
-            ...existingRecord,
-            data,
-            status: "PENDING",
-            metadata: {
-              ...existingRecord.metadata,
-              updatedAt: now,
-            },
-          };
-          const putRequest = store.put(updatedRecord);
-          putRequest.onsuccess = () => resolve(updatedRecord);
-          putRequest.onerror = () => reject(putRequest.error);
-        } else {
-          // No existe, creamos un nuevo registro
-          const newRecord: PendingInspection = {
-            id,
-            data,
-            status: "PENDING",
-            metadata: {
-              createdAt: now,
-              updatedAt: now,
-              attempts: 0,
-            },
-          };
-          const addRequest = store.add(newRecord);
-          addRequest.onsuccess = () => resolve(newRecord);
-          addRequest.onerror = () => reject(addRequest.error);
-        }
-      };
-
-      getRequest.onerror = () => reject(getRequest.error);
-    });
+  constructor(storage: QueueStorage = new MemoryQueueStorage(), maxRetries = 3) {
+    if (!Number.isInteger(maxRetries) || maxRetries < 1) {
+      throw new Error("maxRetries debe ser un entero positivo");
+    }
+    this.storage = storage;
+    this.maxRetries = maxRetries;
   }
 
-  /**
-   * Obtiene todas las inspecciones que están pendientes o fallidas y necesitan sincronizarse.
-   */
-  static async getPending(): Promise<PendingInspection[]> {
-    const db = await openDatabase();
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction(STORE_NAME, "readonly");
-      const store = transaction.objectStore(STORE_NAME);
-      const request = store.getAll();
+  enqueue(inspection: InspectionRecord, queuedAt = inspection.updatedAt): void {
+    const items = this.storage.load();
+    const existing = items.findIndex((item) => item.id === inspection.id);
+    const next: QueuedInspection = {
+      ...inspection,
+      payload: { ...inspection.payload },
+      attempts: existing === -1 ? 0 : items[existing].attempts,
+      queuedAt
+    };
 
-      request.onsuccess = () => {
-        const allRecords = request.result as PendingInspection[];
-        const pendingRecords = allRecords.filter(
-          (r) => r.status === "PENDING" || r.status === "FAILED"
-        );
-        resolve(pendingRecords);
-      };
-
-      request.onerror = () => reject(request.error);
-    });
+    if (existing === -1) items.push(next);
+    else if (inspection.updatedAt >= items[existing].updatedAt) items[existing] = next;
+    this.storage.save(items);
   }
 
-  /**
-   * Actualiza el estado de una inspección en la cola.
-   */
-  static async updateStatus(
-    id: string,
-    status: SyncStatus,
-    errorMsg?: string
-  ): Promise<void> {
-    const db = await openDatabase();
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction(STORE_NAME, "readwrite");
-      const store = transaction.objectStore(STORE_NAME);
-      const request = store.get(id);
+  pending(): QueuedInspection[] {
+    return this.storage.load();
+  }
 
-      request.onsuccess = () => {
-        const record = request.result as PendingInspection | undefined;
-        if (!record) {
-          return reject(new Error("Inspection not found in queue"));
+  async synchronize(
+    online: boolean,
+    send: SyncSender
+  ): Promise<{ synchronized: string[]; failed: string[] }> {
+    if (!online) return { synchronized: [], failed: this.pending().map((item) => item.id) };
+
+    const synchronized: string[] = [];
+    const failed: string[] = [];
+    const remaining: QueuedInspection[] = [];
+
+    for (const item of this.storage.load()) {
+      let sent = false;
+      let attempts = 0;
+      while (attempts < this.maxRetries && !sent) {
+        attempts += 1;
+        try {
+          await send(item);
+          sent = true;
+          synchronized.push(item.id);
+        } catch {
+          if (attempts >= this.maxRetries) failed.push(item.id);
         }
+      }
+      if (!sent) remaining.push({ ...item, attempts });
+    }
 
-        const now = Date.now();
-        record.status = status;
-        record.metadata.updatedAt = now;
-
-        if (status === "FAILED") {
-          record.metadata.error = errorMsg;
-          record.metadata.lastAttempt = now;
-        } else if (status === "SYNCED" || status === "IN_PROGRESS") {
-          if (status === "IN_PROGRESS") {
-             record.metadata.lastAttempt = now;
-             record.metadata.attempts += 1;
-          }
-          record.metadata.error = undefined;
-        }
-
-        const putRequest = store.put(record);
-        putRequest.onsuccess = () => resolve();
-        putRequest.onerror = () => reject(putRequest.error);
-      };
-
-      request.onerror = () => reject(request.error);
-    });
+    this.storage.save(remaining);
+    return { synchronized, failed };
   }
 }

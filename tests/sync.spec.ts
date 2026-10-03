@@ -1,60 +1,87 @@
-import "fake-indexeddb/auto";
 import assert from "node:assert/strict";
-import { SyncQueue } from "../src/lib/sync/queue";
+import { createInspectionRecord } from "../src/lib/storage/schema";
+import { resolveInspectionConflict } from "../src/lib/sync/conflict-policy";
+import { InspectionSyncQueue, MemoryQueueStorage } from "../src/lib/sync/queue";
 
-async function runTests() {
-  console.log("sync.spec.ts: running tests...");
+const inspection = (id: string, updatedAt: number) =>
+  createInspectionRecord(id, { result: "aprobada", notes: "dato sintetico" }, updatedAt);
 
-  // Datos sintéticos
-  const testId = "inspection-test-123";
-  const testData = {
-    title: "Test de Red",
-    inspector: "ArmandoValerio",
-    date: new Date().toISOString(),
-    notes: "Todo en orden",
-  };
-
-  try {
-    // 1. Verificar alta e idempotencia
-    const item1 = await SyncQueue.enqueue(testId, testData);
-    assert.strictEqual(item1.id, testId, "Debe encolar con el ID asignado");
-    assert.strictEqual(item1.status, "PENDING", "El estado inicial debe ser PENDING");
-
-    const item2 = await SyncQueue.enqueue(testId, testData);
-    assert.strictEqual(item2.id, testId, "Debe devolver el mismo elemento por idempotencia");
-    assert.strictEqual(item2.metadata.createdAt, item1.metadata.createdAt, "La fecha de creación no debe cambiar (idempotencia)");
-
-    // 2. Consultar registros pendientes
-    const pendingItems = await SyncQueue.getPending();
-    assert.ok(pendingItems.length >= 1, "Debe existir al menos un registro pendiente");
-    const found = pendingItems.find(p => p.id === testId);
-    assert.ok(found, "La inspección insertada debe encontrarse al buscar pendientes");
-
-    // 3. Transición de estado a IN_PROGRESS
-    await SyncQueue.updateStatus(testId, "IN_PROGRESS");
-    const pendingAfterInProgress = await SyncQueue.getPending();
-    const foundInProgress = pendingAfterInProgress.find(p => p.id === testId);
-    assert.ok(!foundInProgress, "IN_PROGRESS no debe retornar en getPending()");
-
-    // 4. Transición a FAILED (reintentos de cola)
-    await SyncQueue.updateStatus(testId, "FAILED", "Error de red simulado");
-    const pendingAfterFailed = await SyncQueue.getPending();
-    const foundFailed = pendingAfterFailed.find(p => p.id === testId);
-    assert.ok(foundFailed, "FAILED debe retornar en getPending para reintentos");
-    assert.strictEqual(foundFailed?.metadata.attempts, 1, "Debe aumentar el contador de intentos");
-    assert.strictEqual(foundFailed?.metadata.error, "Error de red simulado", "Debe guardar el error de sincronización");
-
-    // 5. Transición a SYNCED
-    await SyncQueue.updateStatus(testId, "SYNCED");
-    const pendingAfterSynced = await SyncQueue.getPending();
-    const foundSynced = pendingAfterSynced.find(p => p.id === testId);
-    assert.ok(!foundSynced, "SYNCED no debe retornar en getPending");
-
-    console.log("sync.spec.ts: PASS");
-  } catch (err) {
-    console.error("sync.spec.ts: FAIL", err);
-    process.exit(1);
-  }
+{
+  const storage = new MemoryQueueStorage();
+  const queue = new InspectionSyncQueue(storage);
+  queue.enqueue(inspection("inspection-001", 100));
+  let calls = 0;
+  const result = await queue.synchronize(false, async () => {
+    calls += 1;
+  });
+  assert.equal(calls, 0);
+  assert.deepEqual(result, { synchronized: [], failed: ["inspection-001"] });
+  assert.equal(queue.pending().length, 1);
 }
 
-runTests();
+{
+  const queue = new InspectionSyncQueue();
+  queue.enqueue(inspection("inspection-002", 200));
+  const sent: string[] = [];
+  const result = await queue.synchronize(true, async (item) => {
+    sent.push(item.id);
+  });
+  assert.deepEqual(sent, ["inspection-002"]);
+  assert.deepEqual(result, { synchronized: ["inspection-002"], failed: [] });
+  assert.deepEqual(queue.pending(), []);
+}
+
+{
+  const queue = new InspectionSyncQueue(new MemoryQueueStorage(), 3);
+  queue.enqueue(inspection("inspection-003", 300));
+  let attempts = 0;
+  const result = await queue.synchronize(true, async () => {
+    attempts += 1;
+    if (attempts < 3) throw new Error("fallo temporal sintetico");
+  });
+  assert.equal(attempts, 3);
+  assert.deepEqual(result, { synchronized: ["inspection-003"], failed: [] });
+}
+
+{
+  const queue = new InspectionSyncQueue();
+  queue.enqueue(inspection("inspection-004", 400));
+  queue.enqueue(inspection("inspection-004", 400));
+  assert.equal(queue.pending().length, 1);
+  let calls = 0;
+  await queue.synchronize(true, async () => {
+    calls += 1;
+  });
+  assert.equal(calls, 1);
+}
+
+{
+  const local = inspection("inspection-005", 500);
+  const older = inspection("inspection-005", 499);
+  const newer = inspection("inspection-005", 501);
+  assert.deepEqual(resolveInspectionConflict(local, older), local);
+  assert.deepEqual(resolveInspectionConflict(local, newer), newer);
+  assert.deepEqual(resolveInspectionConflict(local, local), local);
+  assert.throws(
+    () => resolveInspectionConflict(local, inspection("other-id", 501)),
+    /ids distintos/
+  );
+}
+
+{
+  const queue = new InspectionSyncQueue(new MemoryQueueStorage(), 2);
+  queue.enqueue(inspection("inspection-006", 600));
+  let attempts = 0;
+  const result = await queue.synchronize(true, async () => {
+    attempts += 1;
+    throw new Error("fallo temporal persistente");
+  });
+  assert.equal(attempts, 2);
+  assert.deepEqual(result, { synchronized: [], failed: ["inspection-006"] });
+  assert.equal(queue.pending()[0].attempts, 2);
+  const resumed = await queue.synchronize(true, async () => undefined);
+  assert.deepEqual(resumed, { synchronized: ["inspection-006"], failed: [] });
+  assert.deepEqual(queue.pending(), []);
+}
+
+console.log("sync.spec.ts: PASS");

@@ -70,6 +70,28 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 - Uso de IA: utilicé GitHub Copilot para revisar la implementación, ajustar el ciclo de vida y caché del Service Worker, ampliar las pruebas y redactar esta evidencia. Validé manualmente los cambios, ejecuté la suite local y revisé que no hubiera secretos ni datos reales.
 - Commit SHA final del merge en `main`: `86435b83a493e2760afe788ae87e4aaebe585e58`.
 
+### Jesús Emanuel Vega Medina (jesus-vegmed) — Pruebas de sincronización offline
+
+- Contribución concreta: agregué `tests/sync.spec.ts`, el runner
+  `scripts/run-sync-spec.mjs`, y la implementación aislada de cola,
+  esquema y política en `src/lib/sync/`. La documentación asociada está en
+  `docs/sync-policy.md`.
+- Decisión técnica: usar una cola inyectable con almacenamiento en memoria
+  para que las pruebas sean deterministas y sustituible por IndexedDB, usar
+  el `id` como clave de idempotencia y aplicar last-write-wins por `updatedAt`,
+  conservando local en empates.
+- Prueba ejecutada y resultado real: `npm ci`, `npm run test -- --run`,
+  `npm run verify` y `npm run build`; todos terminaron correctamente. La suite
+  cubre guardado offline, recuperación de conectividad, reintentos,
+  duplicados, conflictos y fallas persistentes reanudables.
+- Limitación: la cola entregada no conecta todavía un backend ni IndexedDB;
+  el transporte y el almacenamiento real deben integrarse en una etapa
+  posterior. Las pruebas usan exclusivamente datos sintéticos y no red real.
+- Uso de IA: utilicé GitHub Copilot como apoyo para estructurar la suite,
+  revisar casos de regresión y redactar la documentación. Validé manualmente
+  el comportamiento, el build y los resultados locales; no se usaron secretos
+  ni datos reales.
+
 ---
 
 - Nombre: Armando Valerio Salmeron

@@ -54,6 +54,11 @@ pasen datos sensibles sintéticos; los reportes reproducibles están en
 `reports/week-04/secret-scan.json`, `reports/week-04/negative-tests.json` y
 `evidence/week-04/engineering.json`.
 
+Para la sincronización offline, `docs/sync-policy.md` documenta la cola,
+reintentos, idempotencia y resolución de conflictos. La prueba reproducible
+`tests/sync.spec.ts` usa únicamente transportes en memoria y se ejecuta como
+parte de `npm test` (también con `npm run test -- --run`).
+
 Para verificar el avance de la **Semana 4** de renderizado:
 
 - **Listado CSR**: abre `/inspecciones`; la ruta usa interacción del cliente para búsqueda, recarga y simulación de error.
@@ -95,4 +100,3 @@ No uses datos reales de personas, laboratorios o estudiantes. Todo dato del star
 - `tests/`: prueba mínima del starter.
 
 Las decisiones de arquitectura y las nuevas carpetas se incorporan en las actividades correspondientes; no es necesario adelantarlas.
-

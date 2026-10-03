@@ -1,32 +1,27 @@
-export type SyncStatus = "PENDING" | "IN_PROGRESS" | "SYNCED" | "FAILED";
+export type InspectionPayload = {
+  result: string;
+  notes?: string;
+};
 
-export interface SyncMetadata {
-  createdAt: number;
+export type InspectionRecord = {
+  id: string;
   updatedAt: number;
+  payload: InspectionPayload;
+};
+
+export type QueuedInspection = InspectionRecord & {
   attempts: number;
-  lastAttempt?: number;
-  error?: string;
-}
+  queuedAt: number;
+};
 
-// Datos sintéticos para la inspección
-export interface InspectionData {
-  title: string;
-  inspector: string;
-  date: string;
-  notes: string;
-  score?: number;
-  [key: string]: any; // Permite propiedades adicionales
-}
+export function createInspectionRecord(
+  id: string,
+  payload: InspectionPayload,
+  updatedAt: number
+): InspectionRecord {
+  if (!id || !Number.isFinite(updatedAt)) {
+    throw new Error("Una inspeccion requiere id y updatedAt validos");
+  }
 
-export interface PendingInspection {
-  // Idempotency key / stable identifier
-  id: string; 
-  data: InspectionData;
-  status: SyncStatus;
-  metadata: SyncMetadata;
+  return { id, payload: { ...payload }, updatedAt };
 }
-
-// Nombre de la base de datos y almacén en IndexedDB
-export const DB_NAME = "campusops_offline_db";
-export const DB_VERSION = 1;
-export const STORE_NAME = "pending_inspections";
