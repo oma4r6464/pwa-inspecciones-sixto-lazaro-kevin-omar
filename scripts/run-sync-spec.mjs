@@ -13,7 +13,7 @@ if (!existsSync(testFile)) {
 import { execSync } from "node:child_process";
 
 try {
-  execSync("npx tsx " + testFile, { stdio: "inherit" });
+    execSync(`npx tsx "${testFile}"`, { stdio: "inherit" });
 } catch (err) {
   process.exit(1);
 }
