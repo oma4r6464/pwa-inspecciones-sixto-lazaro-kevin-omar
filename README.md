@@ -66,6 +66,13 @@ Para verificar el avance de la **Semana 4** de renderizado:
 - **Decisión técnica**: `docs/rendering-decision.md` compara CSR vs SSR, supuestos, límites y métrica repetible de carga.
 - **Pruebas**: `npm test` ejecuta `tests/rendering.spec.ts` y `tests/inspecciones.spec.mjs` junto con las pruebas acumuladas.
 
+Para verificar el avance de la **Semana 5** de sincronización:
+
+- **Política de conflictos y reintentos**: `src/lib/sync/conflict-policy.ts` decide conflictos entre versión local y remota simulada, clasifica fallos y calcula el backoff de forma determinista.
+- **Cola**: `src/lib/sync/queue.ts` aplica la política (tope de intentos, espera entre reintentos, ediciones sin pérdida, confirmaciones repetidas o fuera de orden se ignoran).
+- **Decisión técnica**: `docs/sync-policy.md` explica las reglas, alternativas descartadas y limitaciones.
+- **Pruebas**: `npm run test -- --run` ejecuta `tests/sync.spec.ts` (conflicto, reintento e idempotencia) junto con las pruebas acumuladas.
+
 El Makefile del repositorio define `make verify` como equivalente directo
 de `npm run verify`. Si `make` no está instalado en el entorno local, se
 documenta y ejecuta el equivalente exacto:
@@ -96,6 +103,7 @@ No uses datos reales de personas, laboratorios o estudiantes. Todo dato del star
 - `docs/`: plantillas de documentación de la Semana 1.
 - `docs/cache-strategy.md`: decisiones de caché, fallback offline y actualización segura de Semana 3.
 - `docs/rendering-decision.md`: comparación CSR/SSR, estados y métrica repetible de Semana 4.
+- `docs/sync-policy.md`: política de conflictos, reintentos e idempotencia de Semana 5.
 - `scripts/verify.mjs`: verificación reproducible local.
 - `tests/`: prueba mínima del starter.
 

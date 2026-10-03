@@ -16,7 +16,9 @@ function moduleUri(relativePath) {
 
 const schemaUri = moduleUri("src/lib/storage/schema.ts");
 const conflictUri = moduleUri("src/lib/sync/conflict-policy.ts");
-const queueSource = readFileSync(resolve(root, "src/lib/sync/queue.ts"), "utf8");
+const queueSource = readFileSync(resolve(root, "src/lib/sync/queue.ts"), "utf8")
+  .replace('from "../storage/schema"', `from "${schemaUri}"`)
+  .replace('from "./conflict-policy"', `from "${conflictUri}"`);
 const queueResult = ts.transpileModule(queueSource, { compilerOptions });
 const queueUri = `data:text/javascript;base64,${Buffer.from(queueResult.outputText).toString("base64")}`;
 
