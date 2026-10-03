@@ -72,6 +72,7 @@ Para verificar el avance de la **Semana 5** de sincronización:
 - **Cola**: `src/lib/sync/queue.ts` aplica la política (tope de intentos, espera entre reintentos, ediciones sin pérdida, confirmaciones repetidas o fuera de orden se ignoran).
 - **Decisión técnica**: `docs/sync-policy.md` explica las reglas, alternativas descartadas y limitaciones.
 - **Pruebas**: `npm run test -- --run` ejecuta `tests/sync.spec.ts` (conflicto, reintento e idempotencia) junto con las pruebas acumuladas.
+- **CI visible**: `.github/workflows/week-05-w05-sync-data.yml` replica el feedback publico del kit de Semana 5 sin reemplazar los checks privados del evaluador.
 
 El Makefile del repositorio define `make verify` como equivalente directo
 de `npm run verify`. Si `make` no está instalado en el entorno local, se

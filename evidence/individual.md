@@ -426,19 +426,129 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 ### Armando Valerio Salmeron — Semana 5
 
 - **Mi contribución concreta (con enlace a archivo, commit o revisión)**:
-  Implementé la base offline-first para guardar inspecciones localmente cuando la red no está disponible. Creé el esquema local en `src/lib/storage/schema.ts`, y la cola idempotente en `src/lib/sync/queue.ts` manejando los estados de transacciones pendientes. También creé las pruebas unitarias en `tests/sync.spec.ts`.
+  Implementé la base offline-first para guardar inspecciones localmente
+  cuando la red no está disponible. Aporté el esquema local en
+  `src/lib/storage/schema.ts` y la cola idempotente en
+  `src/lib/sync/queue.ts`, usando el `id` como llave estable para evitar
+  duplicados.
 
 - **Decisión técnica que puedo explicar**:
-  Decidí usar IndexedDB nativo envuelto en Promesas para la aplicación, pero debido a que el entorno de pruebas de Node no tiene IndexedDB, decidí usar `fake-indexeddb` como dependencia de desarrollo. Además, opté por gestionar la idempotencia a nivel de registro validando los estados actuales antes de insertar.
+  La cola final usa un contrato `QueueStorage` para poder conectar una
+  persistencia real en otra etapa, pero las pruebas usan
+  `MemoryQueueStorage` para que el comportamiento sea determinista en
+  Node y GitHub Actions. La idempotencia se resuelve en la cola: una
+  inspección repetida con el mismo `id` no crea otra entrada.
 
 - **Comando o prueba que ejecuté y resultado real**:
-  Ejecuté `npm run test -- --run` para comprobar el correcto funcionamiento de `sync.spec.ts` (idempotencia y transiciones de estados) logrando un resultado de PASS. Adicionalmente, ejecuté `npm run verify` obteniendo "Starter verificable: PASS".
+  Ejecuté `npm run test -- --run`; el resultado fue PASS para las
+  pruebas acumuladas, incluyendo `sync.spec.ts`. También se validó con
+  `npm run verify`.
 
 - **Qué comprueba esta prueba y qué no**:
-  Comprueba que la base de datos se crea correctamente, que no se duplican registros con el mismo identificador (idempotencia) y que los estados (`PENDING`, `IN_PROGRESS`, `FAILED`, `SYNCED`) transicionan de acuerdo a las reglas definidas (actualizando intentos y fechas). No comprueba la sincronización real con un backend.
+  Comprueba guardado offline, sincronización al recuperar red simulada,
+  reintentos, idempotencia y conflictos. No comprueba un backend real,
+  IndexedDB en navegador ni concurrencia entre pestañas.
 
 - **Limitación que encontré**:
-  Tuvimos que adaptar `scripts/run-sync-spec.mjs` para que utilizara `tsx` directamente mediante `child_process`, ya que el método anterior de `dataUri` fallaba al intentar resolver módulos como `fake-indexeddb/auto` y las rutas relativas.
+  La persistencia real de navegador queda pendiente; por ahora se dejó
+  el contrato de almacenamiento para integrarla sin cambiar la lógica
+  principal de la cola.
 
 - **Uso de IA (herramienta, propósito, fragmentos influenciados y validación humana)**:
-  Utilicé Antigravity (IA) para redactar el esqueleto del schema, la clase de la cola idempotente y para diagnosticar y arreglar el problema de module resolution en las pruebas con IndexedDB. Validé de forma manual que los tests se ejecutaran localmente y los cambios no rompieran el resto del sistema.
+  Utilicé Antigravity como apoyo para estructurar la cola y revisar
+  casos de idempotencia. Validé manualmente con pruebas locales y datos
+  exclusivamente sintéticos.
+
+---
+
+### Kevin Omar Sixto Lázaro — Semana 5
+
+- Mi contribución concreta:
+  Integré la política de conflictos y reintentos en
+  `src/lib/sync/conflict-policy.ts`, conectando decisiones puras para
+  `resolveConflict`, `operationKey`, clasificación de fallos y backoff
+  determinista.
+
+- Decisión técnica:
+  Separar la política de conflictos de la cola para que pueda probarse
+  sin red, reloj implícito ni almacenamiento real. La política compara
+  `version`, `updatedAt` y contenido canónico para resolver empates de
+  forma reproducible.
+
+- Prueba ejecutada:
+  `npm run test -- --run`, con PASS en `tests/sync.spec.ts`.
+
+- Limitación:
+  La política simula la versión remota; no existe todavía servidor real
+  ni API de sincronización.
+
+- Uso declarado de IA:
+  Usé apoyo de IA para revisar casos borde de conflictos y reintentos.
+  Validé el resultado leyendo la implementación y ejecutando la suite.
+
+---
+
+### Jesús Emanuel Vega Medina — Semana 5
+
+- Mi contribución concreta:
+  Reforcé `tests/sync.spec.ts` para cubrir guardado offline,
+  recuperación de conectividad simulada, reintentos, duplicados,
+  conflictos, respuestas repetidas y respuestas fuera de orden.
+
+- Decisión técnica:
+  Mantener pruebas deterministas sin servicios privados ni red real. El
+  transporte se inyecta como función y el almacenamiento se sustituye por
+  memoria durante la prueba.
+
+- Prueba ejecutada:
+  `npm run test -- --run`, con PASS en pruebas de manifest, service
+  worker, offline, renderizado, sincronización y seguridad.
+
+- Limitación:
+  La prueba no valida latencia real, IndexedDB en navegador ni
+  condiciones de carrera entre pestañas.
+
+- Uso declarado de IA:
+  Usé GitHub Copilot para proponer casos de prueba y revisar regresiones.
+  Validé manualmente el resultado con la suite local y datos sintéticos.
+
+---
+
+### Samuel Jonathan Trujillo Bolaños — Semana 5
+
+- Commit SHA de integración:
+  `e8964a7`.
+
+- Mi contribución concreta:
+  Integré los PR de Semana 5 sobre `main`, resolví conflictos entre la
+  cola offline, las pruebas y la política de conflictos, agregué
+  `.github/workflows/week-05-w05-sync-data.yml`, actualicé `README.md`,
+  `docs/sync-policy.md`, `scripts/verify.mjs` y esta evidencia.
+
+- Decisión técnica que puedo explicar:
+  Se conservó una cola con almacenamiento inyectable y pruebas en
+  memoria para no depender de IndexedDB en Node. También se mantuvo una
+  política pura de conflictos/reintentos para cubrir idempotencia,
+  fallos temporales, conflictos y respuestas fuera de orden sin servicios
+  externos.
+
+- Comando o prueba ejecutada y resultado real:
+  Ejecuté `npm run test -- --run`; terminó en PASS para las pruebas
+  acumuladas de semanas 1 a 5. La verificación final de build, verify y
+  GitHub Actions se realiza sobre el commit final de entrega.
+
+- Qué comprueba esta prueba y qué no:
+  Comprueba que los artefactos obligatorios existen y que la lógica de
+  cola, conflicto, reintento e idempotencia se comporta de forma
+  reproducible. No comprueba sincronización contra backend real ni
+  persistencia en dispositivo físico.
+
+- Limitación encontrada:
+  La entrega queda lista para conectar un almacenamiento persistente real
+  mediante `QueueStorage`, pero en esta semana se mantiene sin backend y
+  sin datos reales.
+
+- Uso de IA:
+  Usé un asistente de desarrollo con IA para apoyar la resolución de
+  conflictos, revisar cobertura contra la consigna y redactar evidencia.
+  Validé manualmente con lectura de archivos y ejecución de pruebas.

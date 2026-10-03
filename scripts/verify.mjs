@@ -34,12 +34,7 @@ const required = [
   "tests/sync.spec.ts",
   "reports/week-04/secret-scan.json",
   "reports/week-04/negative-tests.json",
-  "evidence/week-04/engineering.json",
-  "src/lib/storage/schema.ts",
-  "src/lib/sync/queue.ts",
-  "tests/sync.spec.ts",
-  "src/lib/sync/conflict-policy.ts",
-  "docs/sync-policy.md"
+  "evidence/week-04/engineering.json"
 ];
 
 const missing = required.filter((file) => !existsSync(resolve(root, file)));
