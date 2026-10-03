@@ -398,3 +398,25 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 
 - Uso de IA (herramienta, propósito, fragmentos influenciados y validación humana):
   Usé un asistente de desarrollo con IA para apoyar la resolución de conflictos, revisar la cobertura de entregables y redactar la documentación técnica. Validé manualmente los cambios revisando archivos, ejecutando pruebas y comprobando que no se modificaran GitHub Actions.
+
+---
+
+### Armando Valerio Salmeron — Semana 5
+
+- **Mi contribución concreta (con enlace a archivo, commit o revisión)**:
+  Implementé la base offline-first para guardar inspecciones localmente cuando la red no está disponible. Creé el esquema local en `src/lib/storage/schema.ts`, y la cola idempotente en `src/lib/sync/queue.ts` manejando los estados de transacciones pendientes. También creé las pruebas unitarias en `tests/sync.spec.ts`.
+
+- **Decisión técnica que puedo explicar**:
+  Decidí usar IndexedDB nativo envuelto en Promesas para la aplicación, pero debido a que el entorno de pruebas de Node no tiene IndexedDB, decidí usar `fake-indexeddb` como dependencia de desarrollo. Además, opté por gestionar la idempotencia a nivel de registro validando los estados actuales antes de insertar.
+
+- **Comando o prueba que ejecuté y resultado real**:
+  Ejecuté `npm run test -- --run` para comprobar el correcto funcionamiento de `sync.spec.ts` (idempotencia y transiciones de estados) logrando un resultado de PASS. Adicionalmente, ejecuté `npm run verify` obteniendo "Starter verificable: PASS".
+
+- **Qué comprueba esta prueba y qué no**:
+  Comprueba que la base de datos se crea correctamente, que no se duplican registros con el mismo identificador (idempotencia) y que los estados (`PENDING`, `IN_PROGRESS`, `FAILED`, `SYNCED`) transicionan de acuerdo a las reglas definidas (actualizando intentos y fechas). No comprueba la sincronización real con un backend.
+
+- **Limitación que encontré**:
+  Tuvimos que adaptar `scripts/run-sync-spec.mjs` para que utilizara `tsx` directamente mediante `child_process`, ya que el método anterior de `dataUri` fallaba al intentar resolver módulos como `fake-indexeddb/auto` y las rutas relativas.
+
+- **Uso de IA (herramienta, propósito, fragmentos influenciados y validación humana)**:
+  Utilicé Antigravity (IA) para redactar el esqueleto del schema, la clase de la cola idempotente y para diagnosticar y arreglar el problema de module resolution en las pruebas con IndexedDB. Validé de forma manual que los tests se ejecutaran localmente y los cambios no rompieran el resto del sistema.
