@@ -27,6 +27,11 @@ const required = [
   "docs/security-controls.md",
   "src/lib/security/safe-error.ts",
   "tests/security.spec.ts",
+  "src/lib/sync/queue.ts",
+  "src/lib/storage/schema.ts",
+  "src/lib/sync/conflict-policy.ts",
+  "docs/sync-policy.md",
+  "tests/sync.spec.ts",
   "reports/week-04/secret-scan.json",
   "reports/week-04/negative-tests.json",
   "evidence/week-04/engineering.json"
