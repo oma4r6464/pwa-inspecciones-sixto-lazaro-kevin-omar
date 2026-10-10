@@ -552,3 +552,37 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
   Usé un asistente de desarrollo con IA para apoyar la resolución de
   conflictos, revisar cobertura contra la consigna y redactar evidencia.
   Validé manualmente con lectura de archivos y ejecución de pruebas.
+
+
+
+### Kevin Omar Sixto Lázaro — Semana 6
+
+- Commit SHA de integración:
+  `PENDIENTE_SHA`.
+
+- Mi contribución concreta:
+  Implementé `src/lib/device/geolocation.ts` con `requestLocation()`,
+  detección de soporte, manejo de permiso denegado, timeout y error
+  recuperable, fallback sintético y redondeo de coordenadas. Agregué
+  `tests/capabilities.spec.ts`, su runner en
+  `scripts/run-capabilities-spec.mjs` y `docs/capabilities.md`.
+
+- Decisión técnica:
+  El proveedor de geolocalización es inyectable y el permiso solo se
+  solicita desde una acción explícita. Se limita la precisión
+  (redondeo a ~11 km) y se devuelve siempre una ubicación utilizable
+  para que la captura de la inspección nunca se rompa.
+
+- Prueba ejecutada:
+  `npm run test -- --run`, con PASS en `tests/capabilities.spec.ts`.
+
+- Limitación:
+  No se probó con un dispositivo físico ni con permisos reales del
+  navegador; todos los datos son sintéticos.
+
+- Uso declarado de IA:
+  Usé apoyo de IA para guiar la estructura del módulo, las pruebas y la
+  documentación. Validé el resultado leyendo el código y ejecutando la
+  suite.
+
+---
