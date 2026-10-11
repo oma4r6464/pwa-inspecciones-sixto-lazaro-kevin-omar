@@ -605,3 +605,54 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
   suite.
 
 ---
+
+### Jesús Emanuel Vega Medina — Semana 6
+
+- Mi contribución concreta:
+  Implementé `src/lib/notifications/client.ts` para solicitar permisos de
+  notificación solo bajo una acción explícita y entregar avisos sintéticos
+  cuando existe un service worker activo.
+
+- Decisión técnica:
+  La API normaliza los casos sin soporte, permiso denegado, permiso pendiente,
+  service worker ausente y error recuperable. No usa push remoto, tokens,
+  claves ni servicios externos.
+
+- Prueba ejecutada:
+  `npm run test -- --run`, con cobertura determinista de permisos y fallback
+  de notificaciones dentro de `tests/capabilities.spec.ts`.
+
+- Limitación:
+  No se valida entrega de notificaciones en un dispositivo físico ni en
+  segundo plano; la entrega depende de las restricciones del navegador.
+
+- Uso declarado de IA:
+  Usé apoyo de IA para revisar escenarios de permisos y fallbacks. Validé la
+  integración mediante lectura de código y ejecución de las pruebas locales.
+
+---
+
+### Samuel Jonathan Trujillo Bolaños — Semana 6
+
+- Mi contribución concreta:
+  Integré los cambios de cámara, geolocalización y notificaciones sobre
+  `main`, resolví los conflictos de archivos compartidos, unifiqué la suite y
+  actualicé la documentación, verificación y el workflow formativo de la
+  semana.
+
+- Decisión técnica:
+  Se mantuvo una única suite acumulada para evitar que las aportaciones de
+  cada capacidad sobrescribieran la cobertura de las demás. Los fallbacks
+  permanecen deterministas y no solicitan permisos por importar módulos.
+
+- Prueba ejecutada:
+  `npm run verify`, `npm run test -- --run` y `npm run build`; la validación
+  final también se confirma en GitHub Actions sobre el SHA de entrega.
+
+- Limitación:
+  Las pruebas usan mocks y datos sintéticos; no sustituyen la validación de
+  permisos reales en hardware físico.
+
+- Uso declarado de IA:
+  Usé un asistente de desarrollo con IA para analizar conflictos y revisar la
+  cobertura. Validé manualmente los cambios y ejecuté las comprobaciones.

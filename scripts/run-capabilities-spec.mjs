@@ -19,9 +19,11 @@ function toDataUri(source) {
 
 const cameraUri = toDataUri(readFileSync(resolve(root, "src/lib/device/camera.ts"), "utf8"));
 const geolocationUri = toDataUri(readFileSync(resolve(root, "src/lib/device/geolocation.ts"), "utf8"));
+const notificationsUri = toDataUri(readFileSync(resolve(root, "src/lib/notifications/client.ts"), "utf8"));
 const spec = readFileSync(testFile, "utf8")
   .replace('from "../src/lib/device/camera"', `from "${cameraUri}"`)
-  .replace('from "../src/lib/device/geolocation"', `from "${geolocationUri}"`);
+  .replace('from "../src/lib/device/geolocation"', `from "${geolocationUri}"`)
+  .replace('from "../src/lib/notifications/client"', `from "${notificationsUri}"`);
 
 await import(toDataUri(spec));
 

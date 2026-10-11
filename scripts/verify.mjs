@@ -36,6 +36,8 @@ const required = [
   "reports/week-04/negative-tests.json",
   "evidence/week-04/engineering.json",
   "src/lib/device/camera.ts",
+  "src/lib/device/geolocation.ts",
+  "src/lib/notifications/client.ts",
   "tests/capabilities.spec.ts",
   "docs/capabilities.md"
 ];

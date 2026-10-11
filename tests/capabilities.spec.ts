@@ -15,6 +15,10 @@ import {
   requestLocation,
   type GeolocationProvider
 } from "../src/lib/device/geolocation";
+import {
+  notifyInspectionChange,
+  requestNotificationPermission
+} from "../src/lib/notifications/client";
 
 console.log("capabilities.spec.ts: running tests...");
 
@@ -77,6 +81,51 @@ const provider = (latitude: number, longitude: number, accuracy: number): Geoloc
   assert.equal(timeout.status, "timeout");
   assert.equal(timeout.location.source, "synthetic");
   assert.equal(createFallbackLocation("   ").source, "synthetic");
+}
+
+// Notificaciones: no hay solicitud ni fallo cuando la API no esta disponible.
+{
+  const originalNotification = globalThis.Notification;
+  const originalNavigator = globalThis.navigator;
+  try {
+    Object.defineProperty(globalThis, "Notification", { configurable: true, value: undefined });
+    Object.defineProperty(globalThis, "navigator", { configurable: true, value: {} });
+    assert.deepEqual(await requestNotificationPermission(), {
+      ok: false,
+      permission: "unsupported",
+      reason: "unsupported"
+    });
+    assert.deepEqual(await notifyInspectionChange(), {
+      ok: false,
+      permission: "unsupported",
+      reason: "unsupported"
+    });
+  } finally {
+    Object.defineProperty(globalThis, "Notification", { configurable: true, value: originalNotification });
+    Object.defineProperty(globalThis, "navigator", { configurable: true, value: originalNavigator });
+  }
+}
+
+// Notificaciones: la entrega depende de permiso concedido y un service worker disponible.
+{
+  const originalNotification = globalThis.Notification;
+  const originalNavigator = globalThis.navigator;
+  try {
+    class SyntheticNotification {
+      static permission: NotificationPermission = "granted";
+      static requestPermission = async (): Promise<NotificationPermission> => "granted";
+    }
+    Object.defineProperty(globalThis, "Notification", { configurable: true, value: SyntheticNotification });
+    Object.defineProperty(globalThis, "navigator", { configurable: true, value: {} });
+    assert.deepEqual(await notifyInspectionChange(), {
+      ok: false,
+      permission: "granted",
+      reason: "service-worker-unavailable"
+    });
+  } finally {
+    Object.defineProperty(globalThis, "Notification", { configurable: true, value: originalNotification });
+    Object.defineProperty(globalThis, "navigator", { configurable: true, value: originalNavigator });
+  }
 }
 
 console.log("capabilities.spec.ts: PASS");
