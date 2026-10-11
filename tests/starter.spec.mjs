@@ -26,3 +26,4 @@ await import("./inspecciones.spec.mjs");
 
 // Ejecutar pruebas críticas de sincronización offline:
 await import("../scripts/run-sync-spec.mjs");
+await import("../scripts/run-capabilities-spec.mjs");

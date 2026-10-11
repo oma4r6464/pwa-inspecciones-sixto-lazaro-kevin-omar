@@ -552,3 +552,14 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
   Usé un asistente de desarrollo con IA para apoyar la resolución de
   conflictos, revisar cobertura contra la consigna y redactar evidencia.
   Validé manualmente con lectura de archivos y ejecución de pruebas.
+## Semana de capacidades opcionales
+
+- Responsable: Jesus Emanuel Vega Medina (`jesus-vegmed`), matrícula `3523110340`.
+- Decisión técnica: separar la solicitud explícita de permiso de la preparación
+  de notificaciones y devolver fallbacks deterministas para APIs ausentes,
+  permisos no concedidos y service worker no disponible.
+- Prueba ejecutada: `npm run test -- --run`, `npm run verify` y `npm run build`.
+- Limitación: la suite no envía push real ni valida entrega fuera del navegador;
+  usa un service worker y datos sintéticos.
+- Uso declarado de IA: se utilizó un asistente de IA para revisar el repositorio,
+  proponer la estructura de pruebas y redactar cambios, verificados localmente.

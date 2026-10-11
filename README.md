@@ -74,6 +74,16 @@ Para verificar el avance de la **Semana 5** de sincronización:
 - **Pruebas**: `npm run test -- --run` ejecuta `tests/sync.spec.ts` (conflicto, reintento e idempotencia) junto con las pruebas acumuladas.
 - **CI visible**: `.github/workflows/week-05-w05-sync-data.yml` replica el feedback publico del kit de Semana 5 sin reemplazar los checks privados del evaluador.
 
+Para verificar las **capacidades opcionales**:
+
+- `src/lib/notifications/client.ts` separa la solicitud explícita de permiso del
+  envío y devuelve fallback si falta la API, el permiso o el service worker.
+- `src/lib/device/camera.ts` y `src/lib/device/geolocation.ts` encapsulan las
+  APIs del navegador sin solicitar permisos al cargar la aplicación.
+- `tests/capabilities.spec.ts` usa únicamente mocks sintéticos para cubrir
+  notificaciones, cámara y geolocalización. La decisión y sus límites están en
+  `docs/capabilities.md`.
+
 El Makefile del repositorio define `make verify` como equivalente directo
 de `npm run verify`. Si `make` no está instalado en el entorno local, se
 documenta y ejecuta el equivalente exacto:
