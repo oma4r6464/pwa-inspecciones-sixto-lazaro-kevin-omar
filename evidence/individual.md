@@ -552,3 +552,25 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
   Usé un asistente de desarrollo con IA para apoyar la resolución de
   conflictos, revisar cobertura contra la consigna y redactar evidencia.
   Validé manualmente con lectura de archivos y ejecución de pruebas.
+
+---
+
+### Armando Valerio Salmeron — Capacidades de Dispositivo (Cámara Opcional)
+
+- **Mi contribución concreta (con enlace a archivo, commit o revisión)**:
+  Implementé el módulo de capacidades `src/lib/device/camera.ts`, la suite de pruebas unitarias `tests/capabilities.spec.ts`, el runner `scripts/run-capabilities-spec.mjs`, y la documentación de diseño y privacidad en `docs/capabilities.md`. También integré la verificación en `scripts/verify.mjs`, `tests/starter.spec.mjs` y `README.md`.
+
+- **Decisión técnica que puedo explicar**:
+  Diseñé la detección de cámara como una mejora progresiva (`progressive enhancement`) con inyección de dependencias (`MockableNavigator`), lo que permite que el módulo se pruebe de forma 100% determinista en Node.js sin navegador real. Se categorizan los estados (`available`, `unsupported`, `permission_denied`, `recoverable_error`) y se garantiza que ante cualquier fallo o rechazo, la función `attachEvidenceWithFallback` devuelva un registro sintético sin bloquear la inspección. No se solicita acceso al importar y no se almacena ninguna foto real ni PII.
+
+- **Comando o prueba que ejecuté y resultado real**:
+  Ejecuté `npm run test -- --run` (resultando en PASS para todas las suites acumuladas y `capabilities.spec.ts: PASS`), `npm run verify` (`Starter verificable: PASS`) y `npm run build` (compilación exitosa).
+
+- **Qué comprueba esta prueba y qué no**:
+  Comprueba que la detección no falle sin `mediaDevices`, que la denegación de permisos no dispare errores no controlados, que los streams se liberen con `stopCameraStream`, y que la evidencia generada sea estrictamente sintética sin filtrar PII. No comprueba el sensor físico ni la calidad óptica de una cámara real de hardware.
+
+- **Limitación que encontré**:
+  El módulo no conecta con almacenamiento blob persistente en disco ni con WebRTC; el payload de evidencia permanece estructurado como descriptor sintético en memoria.
+
+- **Uso de IA (herramienta, propósito, fragmentos influenciados y validación humana)**:
+  Utilicé Antigravity para estructurar los tipos de TypeScript y proponer la clasificación de errores de la API `MediaDevices`. Validé manualmente el comportamiento ejecutando las pruebas locales y asegurándome de cumplir con todas las directrices de privacidad académica.

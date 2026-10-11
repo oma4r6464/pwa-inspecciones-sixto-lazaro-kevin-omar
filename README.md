@@ -74,6 +74,15 @@ Para verificar el avance de la **Semana 5** de sincronización:
 - **Pruebas**: `npm run test -- --run` ejecuta `tests/sync.spec.ts` (conflicto, reintento e idempotencia) junto con las pruebas acumuladas.
 - **CI visible**: `.github/workflows/week-05-w05-sync-data.yml` replica el feedback publico del kit de Semana 5 sin reemplazar los checks privados del evaluador.
 
+Para verificar el avance de las **Capacidades de Dispositivo (Cámara y Fallback)**:
+
+- **Módulo de cámara opcional**: `src/lib/device/camera.ts` detecta soporte y solicita permisos bajo acción explícita del usuario sin bloqueos.
+- **Manejo de estados**: clasifica en `available`, `unsupported`, `permission_denied` y `recoverable_error`.
+- **Fallback resiliente**: ante navegadores sin cámara o permisos denegados, genera descriptores de evidencia sintética garantizando que el flujo de inspección continúe.
+- **Privacidad estricta**: cero PII, sin fotos reales en el repositorio, sin secretos ni servicios externos.
+- **Decisión técnica**: `docs/capabilities.md` documenta la matriz de estados, el flujo de fallback y las restricciones de plataforma.
+- **Pruebas**: `npm run test -- --run` ejecuta `tests/capabilities.spec.ts` junto con las suites acumuladas.
+
 El Makefile del repositorio define `make verify` como equivalente directo
 de `npm run verify`. Si `make` no está instalado en el entorno local, se
 documenta y ejecuta el equivalente exacto:
@@ -105,6 +114,7 @@ No uses datos reales de personas, laboratorios o estudiantes. Todo dato del star
 - `docs/cache-strategy.md`: decisiones de caché, fallback offline y actualización segura de Semana 3.
 - `docs/rendering-decision.md`: comparación CSR/SSR, estados y métrica repetible de Semana 4.
 - `docs/sync-policy.md`: política de conflictos, reintentos e idempotencia de Semana 5.
+- `docs/capabilities.md`: decisiones de soporte de cámara, fallback y privacidad sin PII.
 - `scripts/verify.mjs`: verificación reproducible local.
 - `tests/`: prueba mínima del starter.
 
