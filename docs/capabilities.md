@@ -20,6 +20,12 @@ dependa de mensajes propios del navegador.
 
 ## Privacidad y seguridad
 
+Los errores de camara usan mensajes fijos para evitar exponer detalles del
+dispositivo. La adjuncion sintetica libera el stream y admite promesas
+rechazadas sin bloquear la inspeccion. Los identificadores se limitan a 80
+caracteres; las etiquetas siguen siendo entradas del usuario y deben contener
+solo texto ficticio. Sanitizar caracteres no garantiza anonimizar datos.
+
 - No se solicita una capacidad al cargar la aplicacion ni al importar un modulo.
 - La camara libera sus pistas cuando el consumidor termina con el stream.
 - La geolocalizacion usa `enableHighAccuracy: false`, redondea coordenadas y

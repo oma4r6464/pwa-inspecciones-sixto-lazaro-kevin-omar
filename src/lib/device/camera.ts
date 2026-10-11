@@ -91,13 +91,12 @@ export async function requestCameraAccess(
     };
   } catch (err: unknown) {
     const errorName = (err as { name?: string })?.name || "";
-    const errorMessage = (err as { message?: string })?.message || String(err);
 
     // Permiso denegado por el usuario o directiva de permisos
     if (errorName === "NotAllowedError" || errorName === "PermissionDeniedError") {
       return {
         status: "permission_denied",
-        error: `Permiso denegado por el usuario: ${errorMessage}`,
+        error: "Permiso denegado por el usuario.",
         canFallback: true
       };
     }
@@ -105,7 +104,7 @@ export async function requestCameraAccess(
     // Errores recuperables: hardware ocupado, restricción imposible o no encontrado
     return {
       status: "recoverable_error",
-      error: `Error temporal o de hardware (${errorName}): ${errorMessage}`,
+      error: "Error temporal o de hardware. Puedes usar la evidencia sintetica.",
       canFallback: true
     };
   }
@@ -130,8 +129,10 @@ export function stopCameraStream(stream?: { getTracks?: () => Array<{ stop: () =
  * 4. Generador de evidencia sintética/manual garantizada sin datos reales ni PII.
  */
 export function createSyntheticEvidence(input: SyntheticFallbackInput, isCamera = false): SyntheticEvidence {
-  const sanitizedId = String(input.inspectionId).replace(/[^a-zA-Z0-9_-]/g, "");
-  const now = input.timestamp ?? Date.now();
+  const sanitizedId = String(input.inspectionId).replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 80) || "inspection-synthetic";
+  const now = typeof input.timestamp === "number" && Number.isFinite(input.timestamp) && input.timestamp >= 0
+    ? Math.floor(input.timestamp)
+    : Date.now();
   const label = input.label ?? (isCamera ? "evidencia-captura-sintetica" : "evidencia-manual-sintetica");
 
   return {
@@ -162,9 +163,13 @@ export async function attachEvidenceWithFallback(
   evidence: SyntheticEvidence;
   blocked: boolean;
 }> {
-  const result = await cameraPromise;
+  const result = await cameraPromise.catch((): CameraAccessResult => ({
+    status: "recoverable_error",
+    canFallback: true
+  }));
 
   if (result.status === "available") {
+    stopCameraStream(result.stream);
     return {
       success: true,
       status: "available",

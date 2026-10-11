@@ -577,7 +577,7 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 ### Kevin Omar Sixto Lázaro — Semana 6
 
 - Commit SHA de integración:
-  `240f44a81f3bcbdcfd2a9e7e417b377d8f16a1aa`.
+  `240f44aed39ce2ac8309ba5a24710c1b288fd606`.
 
 - Mi contribución concreta:
   Implementé `src/lib/device/geolocation.ts` con `requestLocation()`,

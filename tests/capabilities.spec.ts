@@ -23,6 +23,25 @@ import {
 console.log("capabilities.spec.ts: running tests...");
 
 {
+  const result = await requestCameraAccess({ mediaDevices: { getUserMedia: async () => {
+    throw new Error("sensitive-device-detail");
+  } } });
+  assert.equal(result.status, "recoverable_error");
+  assert.equal(JSON.stringify(result).includes("sensitive-device-detail"), false);
+  const fallback = await attachEvidenceWithFallback(Promise.reject(new Error("private-detail")), {
+    inspectionId: "synthetic-001", timestamp: 1
+  });
+  assert.equal(fallback.blocked, false);
+  assert.equal(fallback.status, "recoverable_error");
+  let stopped = 0;
+  await attachEvidenceWithFallback(Promise.resolve({ status: "available", canFallback: true,
+    stream: { getTracks: () => [{ stop: () => { stopped += 1; } }] } as unknown as MediaStream
+  }), { inspectionId: "synthetic-001", timestamp: 1 });
+  assert.equal(stopped, 1);
+  assert.equal(createSyntheticEvidence({ inspectionId: "x".repeat(1000), timestamp: 1 }).inspectionId.length, 80);
+}
+
+{
   const result = await requestCameraAccess({} as MockableNavigator);
   assert.equal(checkCameraSupport({}), false);
   assert.equal(result.status, "unsupported");
