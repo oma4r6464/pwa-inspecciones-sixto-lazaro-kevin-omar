@@ -27,5 +27,5 @@ await import("./inspecciones.spec.mjs");
 // Ejecutar pruebas críticas de sincronización offline:
 await import("../scripts/run-sync-spec.mjs");
 
-// Ejecutar pruebas críticas de capacidades (cámara y fallback):
+// Ejecutar pruebas críticas de capacidades opcionales y sus fallbacks:
 await import("../scripts/run-capabilities-spec.mjs");
