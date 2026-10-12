@@ -54,6 +54,12 @@ debe mostrar su alternativa local sin interrumpir la inspeccion.
 
 ## Limites conocidos
 
+El formulario de inicio incluye controles explicitos en
+`src/components/capability-controls.tsx`: comprueba y libera la camara, prueba
+ubicacion con un proveedor sintetico y muestra un aviso local si la
+notificacion no puede entregarse. La espera de un service worker activo tiene
+un limite de tres segundos. Ninguna opcion es obligatoria para guardar.
+
 Las pruebas usan proveedores inyectables y mocks deterministas; no validan un
 sensor fisico, permisos reales del navegador, calidad optica ni entrega push en
 segundo plano. Una integracion futura debera solicitar cada permiso desde la UI

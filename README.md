@@ -76,6 +76,11 @@ Para verificar el avance de la **Semana 5** de sincronización:
 
 Para verificar el avance de la **Semana 6: capacidades opcionales**:
 
+Abre Inicio y pulsa Agregar inspeccion. Los controles opcionales permiten
+comprobar camara, probar ubicacion sintetica y enviar una notificacion. Si no
+hay permiso o service worker activo, se muestra un aviso local; puedes guardar
+sin usar estas opciones. No se capturan fotos ni coordenadas reales.
+
 - **Módulo de cámara opcional**: `src/lib/device/camera.ts` detecta soporte y solicita permisos bajo acción explícita del usuario sin bloqueos.
 - **Manejo de estados**: clasifica en `available`, `unsupported`, `permission_denied` y `recoverable_error`.
 - **Fallback resiliente**: ante navegadores sin cámara o permisos denegados, genera descriptores de evidencia sintética garantizando que el flujo de inspección continúe.

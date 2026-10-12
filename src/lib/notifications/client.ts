@@ -37,7 +37,7 @@ export async function requestNotificationPermission(): Promise<
   }
 }
 
-export async function notifyInspectionChange(): Promise<NotificationResult> {
+export async function notifyInspectionChange(timeoutMs = 3000): Promise<NotificationResult> {
   const api = getNotificationApi();
   if (!api) return { ok: false, permission: "unsupported", reason: "unsupported" };
   if (api.permission !== "granted") {
@@ -47,9 +47,16 @@ export async function notifyInspectionChange(): Promise<NotificationResult> {
     return { ok: false, permission: "granted", reason: "service-worker-unavailable" };
   }
 
+  let timer: ReturnType<typeof setTimeout> | undefined;
   try {
-    const registration = await navigator.serviceWorker.ready;
-    if (!registration.showNotification) {
+    const registration = await Promise.race([
+      navigator.serviceWorker.ready,
+      new Promise<undefined>((resolve) => {
+        timer = setTimeout(() => resolve(undefined),
+          Number.isFinite(timeoutMs) && timeoutMs >= 0 ? timeoutMs : 3000);
+      })
+    ]);
+    if (!registration?.showNotification) {
       return { ok: false, permission: "granted", reason: "service-worker-unavailable" };
     }
     await registration.showNotification(notificationText.title, {
@@ -59,5 +66,7 @@ export async function notifyInspectionChange(): Promise<NotificationResult> {
     return { ok: true, permission: "granted", delivered: true };
   } catch {
     return { ok: false, permission: "granted", reason: "error" };
+  } finally {
+    if (timer !== undefined) clearTimeout(timer);
   }
 }

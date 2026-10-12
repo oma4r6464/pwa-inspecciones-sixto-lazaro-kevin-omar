@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { inspections as syntheticInspections, type Inspection, type InspectionStatus } from "../lib/data/inspections";
 import { AppShell, EmptyState, ErrorState, LoadingState } from "../components/app-shell";
+import { CapabilityControls } from "../components/capability-controls";
 
 type LoadStatus = "loading" | "error" | "empty" | "ready";
 
@@ -225,6 +226,7 @@ export default function HomePage() {
                 />
               </div>
               {formError && <p className="form-error">{formError}</p>}
+              <CapabilityControls />
               <button type="submit" className="add-inspection-submit">
                 Guardar inspección
               </button>

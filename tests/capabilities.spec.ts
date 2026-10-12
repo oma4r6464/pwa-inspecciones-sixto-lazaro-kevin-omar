@@ -141,6 +141,18 @@ const provider = (latitude: number, longitude: number, accuracy: number): Geoloc
       permission: "granted",
       reason: "service-worker-unavailable"
     });
+    Object.defineProperty(globalThis, "navigator", { configurable: true, value: {
+      serviceWorker: { ready: new Promise(() => {}) }
+    } });
+    assert.deepEqual(await notifyInspectionChange(10), {
+      ok: false, permission: "granted", reason: "service-worker-unavailable"
+    });
+    let delivered = 0;
+    Object.defineProperty(globalThis, "navigator", { configurable: true, value: {
+      serviceWorker: { ready: Promise.resolve({ showNotification: async () => { delivered += 1; } }) }
+    } });
+    assert.equal((await notifyInspectionChange()).ok, true);
+    assert.equal(delivered, 1);
   } finally {
     Object.defineProperty(globalThis, "Notification", { configurable: true, value: originalNotification });
     Object.defineProperty(globalThis, "navigator", { configurable: true, value: originalNavigator });

@@ -634,6 +634,16 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 
 ### Samuel Jonathan Trujillo Bolaños — Semana 6
 
+- Seguimiento de integracion:
+  Se conectaron controles opcionales al formulario de inicio y se limito a
+  tres segundos la espera del service worker para devolver un aviso local.
+  La prueba automatizada reproduce un worker que nunca queda listo y una
+  entrega exitosa simulada. La ubicacion de la demostracion usa un proveedor
+  sintetico; no se verificaron permisos en hardware fisico. Se uso apoyo de
+  un asistente de desarrollo con IA para implementar y revisar estos cambios;
+  las comprobaciones automatizadas no sustituyen la validacion humana en un
+  navegador real.
+
 - Mi contribución concreta:
   Integré los cambios de cámara, geolocalización y notificaciones sobre
   `main`, resolví los conflictos de archivos compartidos, unifiqué la suite y
