@@ -1,0 +1,35 @@
+﻿
+> pwa-inspecciones-laboratorio@0.1.0 test:unit
+> node --import tsx --test --experimental-test-coverage tests/unit/inspection-capture.test.ts tests/unit/inspection-queue.test.ts
+
+✔ accepts inspection captures with required fields (3.6036ms)
+✔ rejects empty required fields and reports their names (0.3338ms)
+✔ rejects required fields containing only whitespace (0.2038ms)
+✔ reports only the required field that is missing (0.176ms)
+✔ enqueuing the same inspection twice keeps one item and sends it once (4.887ms)
+✔ a changed payload for the same ID updates one queued item as a new version (0.4747ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 336.4102
+ℹ start of coverage report
+ℹ -------------------------------------------------------------------------------------------------------------------------------------
+ℹ file                     | line % | branch % | funcs % | uncovered lines
+ℹ -------------------------------------------------------------------------------------------------------------------------------------
+ℹ src                      |        |          |         | 
+ℹ  lib                     |        |          |         | 
+ℹ   storage                |        |          |         | 
+ℹ    schema.ts             | 100.00 |    91.67 |  100.00 | 
+ℹ   sync                   |        |          |         | 
+ℹ    conflict-policy.ts    |  48.69 |    80.00 |   36.67 | 25-26 46 64-70 74-91 94-122 127-139 144-148 151-159 163-165 167-173 176-179
+ℹ    queue.ts              |  71.69 |    75.56 |   84.62 | 23-24 75-80 82-92 106-108 110-132 134-135
+ℹ   validation             |        |          |         | 
+ℹ    inspection-capture.ts | 100.00 |    93.33 |  100.00 | 
+ℹ -------------------------------------------------------------------------------------------------------------------------------------
+ℹ all files                |  64.72 |    81.52 |   68.06 | 
+ℹ -------------------------------------------------------------------------------------------------------------------------------------
+ℹ end of coverage report

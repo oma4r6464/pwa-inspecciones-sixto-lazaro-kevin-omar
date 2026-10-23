@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { inspections as syntheticInspections, type Inspection, type InspectionStatus } from "../lib/data/inspections";
+import { validateInspectionCapture } from "../lib/validation/inspection-capture";
 import { AppShell, EmptyState, ErrorState, LoadingState } from "../components/app-shell";
 import { CapabilityControls } from "../components/capability-controls";
 
@@ -111,7 +112,8 @@ export default function HomePage() {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!form.location.trim() || !form.summary.trim()) {
+    const validation = validateInspectionCapture(form);
+    if (!validation.valid) {
       setFormError("Ubicación y resumen son obligatorios.");
       return;
     }

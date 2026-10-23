@@ -666,3 +666,72 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 - Uso declarado de IA:
   Usé un asistente de desarrollo con IA para analizar conflictos y revisar la
   cobertura. Validé manualmente los cambios y ejecuté las comprobaciones.
+
+---
+
+### Armando Valerio Salmeron — Semana 8
+
+- **Mi contribución concreta y enlace**:
+  Extraje la regla de captura en
+  [`src/lib/validation/inspection-capture.ts`](../src/lib/validation/inspection-capture.ts)
+  y la conecté al submit del formulario en
+  [`src/app/page.tsx`](../src/app/page.tsx). Agregué pruebas unitarias para
+  validación y cola en [`tests/unit/`](../tests/unit/), un comando reproducible
+  `test:unit` en [`package.json`](../package.json), el reporte de prueba y
+  cobertura en [`reports/week-08/unit-report.txt`](../reports/week-08/unit-report.txt),
+  y el diagnóstico, contratos y matriz riesgo–prueba en
+  [`docs/test-strategy.md`](../docs/test-strategy.md). Trabajo en la rama
+  `feat/week-08-validation-idempotency`; todavía no se ha integrado ni tiene
+  commit de entrega.
+
+- **Decisión técnica y motivo**:
+  Mantener la regla de validación como función pura compartida por el flujo y
+  las pruebas: `location` y `summary` son obligatorios tras recortar espacios,
+  mientras que `inspector` sigue siendo opcional. Para idempotencia reutilicé
+  `InspectionSyncQueue` con `MemoryQueueStorage`, usando el ID estable del
+  registro como llave, sin duplicar la regla en pruebas ni depender de red o
+  hardware.
+
+- **Comandos ejecutados y resultados reales**:
+  - `npm ci`: PASS, terminó con código 0 e instaló 32 paquetes. npm reportó
+    3 vulnerabilidades en dependencias (2 altas y 1 crítica); no ejecuté
+    `npm audit fix`.
+  - `npm run dev`: Next.js informó `Ready`; `http://localhost:3000` respondió
+    HTTP 200. La comprobación manual del formulario rechazó campos vacíos y
+    espacios, y aceptó datos sintéticos válidos.
+  - `npm test`: PASS, suite acumulada con starter, manifest, service worker,
+    offline, rendering, inspecciones, sincronización, capabilities y security.
+  - `npm run test:unit`: PASS, 6 pruebas aprobadas y 0 fallidas. Reporte:
+    [`reports/week-08/unit-report.txt`](../reports/week-08/unit-report.txt).
+    Cobertura de líneas informada: validación 100 %, cola 71.69 % y total de
+    archivos instrumentados 64.72 %.
+  - `npm run verify`: PASS, “Starter verificable: PASS”; genera
+    `reports/verification.json` y comprueba artefactos requeridos, no sustituye
+    pruebas ni build.
+  - `npm run build`: PASS, compilación optimizada y verificación de tipos
+    completadas.
+
+- **Qué demuestra y qué no**:
+  Las pruebas unitarias demuestran resultados explícitos para capturas válidas,
+  campos obligatorios vacíos o con espacios, reporte de campos faltantes,
+  reencolado del mismo ID sin duplicar el envío y actualización de versión al
+  cambiar el payload. La prueba manual confirma el mensaje del formulario y
+  una captura sintética aceptada en la interfaz. No demuestra persistencia en
+  IndexedDB, deduplicación del servidor, tratamiento de dos IDs distintos con
+  contenido equivalente, concurrencia entre pestañas ni funcionamiento en
+  hardware.
+
+- **Limitación**:
+  La demo guarda en memoria y no usa un backend; por ello, el escenario de
+  respuesta remota perdida no se reprodujo. La idempotencia se limita a un ID
+  estable y al almacenamiento usado por la cola. La cobertura de la cola es
+  parcial (71.69 % de líneas) y no implica que todos sus caminos estén
+  probados.
+
+- **Uso de IA (herramienta, propósito, partes influidas y validación propia)**:
+  Usé Copilot SDK en VS Code como asistente de desarrollo para estructurar la
+  función de validación, proponer casos de prueba y redactar la matriz y el
+  resumen de evidencia. Revisé el contrato frente al formulario y la cola
+  existentes, ejecuté personalmente los comandos anteriores y confirmé los
+  resultados reportados; la IA no ejecutó ni verificó por sí sola estas
+  comprobaciones.
