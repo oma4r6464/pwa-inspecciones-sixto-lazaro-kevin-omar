@@ -18,7 +18,9 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
   de cámara se mockean para mantener la prueba sintética y reproducible.
 - Comando ejecutado: `npm ci`, `npx playwright install chromium` y `npm run test:e2e`.
   Resultado y reporte: se registran después de ejecutar la suite en
-  `reports/week-08/e2e-regression.txt`; el HTML queda en `reports/e2e/html`.
+  `reports/e2e/html`; los reportes de defectos controlados quedan en
+  `reports/week-08/e2e-defect-failure.txt` y
+  `reports/week-08/e2e-defect-recovery.txt`.
 - Qué demuestra: interacción en navegador, persistencia IndexedDB, reconexión,
   sincronización única y captura completada con fallback de cámara. Qué no demuestra:
   un backend real, hardware físico, coordenadas reales ni varias pestañas.
@@ -709,9 +711,9 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
   `test:unit` en [`package.json`](../package.json), el reporte de prueba y
   cobertura en [`reports/week-08/unit-report.txt`](../reports/week-08/unit-report.txt),
   y el diagnóstico, contratos y matriz riesgo–prueba en
-  [`docs/test-strategy.md`](../docs/test-strategy.md). Trabajo en la rama
-  `feat/week-08-validation-idempotency`; todavía no se ha integrado ni tiene
-  commit de entrega.
+  [`docs/test-strategy.md`](../docs/test-strategy.md). La contribución quedó
+  integrada mediante los PR #33 y #36; el SHA evaluado es el que se fija en
+  Classroom.
 
 - **Decisión técnica y motivo**:
   Mantener la regla de validación como función pura compartida por el flujo y
@@ -786,8 +788,33 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
   [`src/app/page.tsx`](../src/app/page.tsx), la sección de integración y
   persistencia en [`docs/test-strategy.md`](../docs/test-strategy.md) y el
   reporte [`reports/week-08/integration-report.txt`](../reports/week-08/integration-report.txt).
-  Todavía no está integrada ni tiene commit de entrega; el SHA final común se
-  registra en Classroom después de la última integración.
+  La contribución quedó integrada mediante los PR #34 y #36; el SHA evaluado
+  es el que se fija en Classroom.
+
+---
+
+### Samuel Jonathan Trujillo Bolaños (KIRA21M) — Semana 8
+
+- **Contribución concreta**: coordiné la integración ordenada de las
+  contribuciones de Armando, Kevin y Jesús en `dev` mediante los PR #33, #34
+  y #35, y la promoción final a `main` mediante el PR #36. También consolidé
+  la estrategia, la evidencia y la verificación del workflow académico.
+- **Decisión técnica**: conservar los checks existentes y agregar validaciones
+  explícitas de lint estructural, tipos y build antes de unitarias, integración
+  y E2E. El lint revisa marcadores de conflicto y patrones de secretos sin
+  depender de servicios externos.
+- **Pruebas ejecutadas**: `npm run lint`, `npm run typecheck`, `npm run
+  test:unit`, `npm run test:integration`, `npm run verify` y `npm run build`.
+  GitHub Actions confirmó además el flujo E2E con Chromium sobre el commit
+  integrado.
+- **Limitación**: las pruebas usan datos sintéticos, mocks y Chromium; no
+  sustituyen hardware, permisos reales ni un backend de producción. `npm ci`
+  mantiene las advertencias de vulnerabilidades heredadas sin aplicar cambios
+  incompatibles.
+- **Uso declarado de IA**: utilicé un asistente de desarrollo para revisar la
+  cobertura, detectar inconsistencias documentales y proponer comprobaciones.
+  Validé manualmente los cambios, los comandos y los resultados antes de
+  integrarlos.
 
 - **Decisión técnica y motivo**:
   Implementé `QueueStorage` sobre IndexedDB con una copia en memoria y
