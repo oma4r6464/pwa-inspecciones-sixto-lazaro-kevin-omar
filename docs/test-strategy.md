@@ -117,3 +117,38 @@ Comando: `npm run test:integration`. Resultado observado: 8 pruebas, 8 aprobadas
 - El remoto de la demo es sintético: no demuestra el comportamiento de un backend real.
 - `/inspecciones/[id]` solo lee los datos sintéticos fijos, por lo que una inspección nueva no tiene página de detalle.
 - No se cubre deduplicación de capturas equivalentes con ids distintos.
+
+## E2E de navegador — Semana 8
+
+`tests/e2e/inspection-flow.spec.ts` ejecuta el flujo integrado con Playwright sobre
+un servidor real de Next.js. `playwright.config.ts` arranca `npm run build && npm
+start`, usa Chromium y conserva HTML, trazas, video y capturas cuando corresponde.
+
+Los escenarios son aislados: antes de cada prueba se elimina la base IndexedDB
+`pwa-inspecciones-queue` y se limpian los almacenamientos del navegador. El primer
+caso crea una inspección sintética, fuerza desconexión, guarda, recarga, verifica
+persistencia, reconecta, espera el estado observable `Sincronizada` y confirma una
+sola tarjeta con ese título. El segundo deniega la cámara mediante permisos y un
+mock de `getUserMedia`; comprueba el aviso de fallback y completa la captura sin
+usar cámara, coordenadas ni permisos físicos.
+
+Comandos reproducibles:
+
+```text
+npm ci
+npx playwright install --with-deps chromium
+npm run test:e2e
+```
+
+El reporte HTML se genera en `reports/e2e/html`. El workflow
+`.github/workflows/academic-evaluation.yml` ejecuta exactamente la instalación,
+el navegador y la suite en CI, y publica ese directorio como artefacto.
+
+### Defecto controlado y recuperación
+
+La protección contra duplicados se controla en `InspectionSyncQueue.enqueue()`.
+En una rama temporal de trabajo se retiró únicamente la búsqueda de la entrada
+existente; la prueba E2E de recarga/sincronización falló al encontrar dos tarjetas.
+La solución se restauró antes de esta entrega y la misma prueba pasó. La evidencia
+real incluye el comando, SHA de cada estado y la salida conservada en
+`reports/week-08/e2e-regression.txt`. El defecto no se integra en `main`.

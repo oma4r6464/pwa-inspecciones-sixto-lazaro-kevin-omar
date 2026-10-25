@@ -6,6 +6,31 @@ https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar
 SHA final del equipo: se fija en Classroom con el último commit entregado en `main`.
 
 ---
+
+### Jesús Emanuel Vega Medina (jesus-vegmed) — Semana 8 E2E
+
+- Contribución concreta: agregué [tests/e2e/inspection-flow.spec.ts](../tests/e2e/inspection-flow.spec.ts),
+  [playwright.config.ts](../playwright.config.ts), el workflow
+  [.github/workflows/academic-evaluation.yml](../.github/workflows/academic-evaluation.yml)
+  y documenté el alcance en [docs/test-strategy.md](../docs/test-strategy.md).
+- Decisión y motivo: usar Playwright con Chromium y `context.setOffline()` para
+  probar el flujo real de crear, persistir, recargar y sincronizar; los permisos
+  de cámara se mockean para mantener la prueba sintética y reproducible.
+- Comando ejecutado: `npm ci`, `npx playwright install chromium` y `npm run test:e2e`.
+  Resultado y reporte: se registran después de ejecutar la suite en
+  `reports/week-08/e2e-regression.txt`; el HTML queda en `reports/e2e/html`.
+- Qué demuestra: interacción en navegador, persistencia IndexedDB, reconexión,
+  sincronización única y captura completada con fallback de cámara. Qué no demuestra:
+  un backend real, hardware físico, coordenadas reales ni varias pestañas.
+- Defecto controlado: se quitó temporalmente la deduplicación de la cola en una
+  rama de prueba; la corrida E2E falló. Se restauró la línea y la misma prueba
+  pasó. Los SHA y comandos exactos quedan en el reporte; el defecto no se integra.
+- Limitación: el transporte remoto de la aplicación es sintético y no valida
+  disponibilidad de un servicio externo.
+- Uso de IA: utilicé GitHub Copilot para estructurar los escenarios Playwright,
+  el workflow y la documentación. Validé personalmente selectores, aislamiento,
+  permisos mockeados, la corrida real y la evidencia de fallo/recuperación.
+
 - Nombre: Kevin Omar Sixto Lázaro
 - Mi contribución concreta (con enlace a archivo, commit o revisión):
   Configuré el proyecto localmente (`npm ci`, `npm run dev`), creé el
