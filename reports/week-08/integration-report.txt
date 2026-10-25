@@ -1,0 +1,62 @@
+
+> pwa-inspecciones-laboratorio@0.1.0 test:integration
+> node --import tsx --test tests/integration/offline-persistence.test.ts tests/integration/inspection-store.test.ts
+
+TAP version 13
+# Subtest: el store de la interfaz recupera la captura offline tras reabrir
+ok 1 - el store de la interfaz recupera la captura offline tras reabrir
+  ---
+  duration_ms: 7.8401
+  type: 'test'
+  ...
+# Subtest: reintento del store con la misma clave deja un solo registro remoto
+ok 2 - reintento del store con la misma clave deja un solo registro remoto
+  ---
+  duration_ms: 3.3394
+  type: 'test'
+  ...
+# Subtest: guardar mientras se sincroniza no pierde la inspeccion nueva
+ok 3 - guardar mientras se sincroniza no pierde la inspeccion nueva
+  ---
+  duration_ms: 25.7852
+  type: 'test'
+  ...
+# Subtest: guardado offline sobrevive al recrear el consumidor
+ok 4 - guardado offline sobrevive al recrear el consumidor
+  ---
+  duration_ms: 7.4927
+  type: 'test'
+  ...
+# Subtest: reconectar drena la operacion pendiente y la persiste vacia
+ok 5 - reconectar drena la operacion pendiente y la persiste vacia
+  ---
+  duration_ms: 3.3994
+  type: 'test'
+  ...
+# Subtest: reintentar tras respuesta perdida deja exactamente un registro remoto
+ok 6 - reintentar tras respuesta perdida deja exactamente un registro remoto
+  ---
+  duration_ms: 1.5761
+  type: 'test'
+  ...
+# Subtest: reencolar la misma inspeccion tras recrear no duplica la entrada
+ok 7 - reencolar la misma inspeccion tras recrear no duplica la entrada
+  ---
+  duration_ms: 1.4327
+  type: 'test'
+  ...
+# Subtest: los casos estan aislados: una base nueva no ve datos de otra
+ok 8 - los casos estan aislados: una base nueva no ve datos de otra
+  ---
+  duration_ms: 1.2637
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 334.3472
