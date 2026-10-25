@@ -147,8 +147,11 @@ el navegador y la suite en CI, y publica ese directorio como artefacto.
 ### Defecto controlado y recuperación
 
 La protección contra duplicados se controla en `InspectionSyncQueue.enqueue()`.
-En una rama temporal de trabajo se retiró únicamente la búsqueda de la entrada
-existente; la prueba E2E de recarga/sincronización falló al encontrar dos tarjetas.
-La solución se restauró antes de esta entrega y la misma prueba pasó. La evidencia
-real incluye el comando, SHA de cada estado y la salida conservada en
-`reports/week-08/e2e-regression.txt`. El defecto no se integra en `main`.
+En la rama temporal `tmp/week-08-duplicate-regression`, SHA
+`59857202c296992040c758643208137e77e6e141`, se retiró únicamente la búsqueda de
+la entrada existente. La prueba relevante `npm run test:unit` falló con dos
+aserciones `2 !== 1` en `tests/unit/inspection-queue.test.ts`. La solución se
+restauró sobre SHA `31380fb72e36c45df5e6c6ff115ca6f79e106a78` y el mismo comando
+terminó con código 0. La salida real queda en
+`reports/week-08/e2e-defect-failure.txt` y
+`reports/week-08/e2e-defect-recovery.txt`. El defecto no se integra en `main`.

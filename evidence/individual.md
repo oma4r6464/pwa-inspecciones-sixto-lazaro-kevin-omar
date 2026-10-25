@@ -22,9 +22,13 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 - Qué demuestra: interacción en navegador, persistencia IndexedDB, reconexión,
   sincronización única y captura completada con fallback de cámara. Qué no demuestra:
   un backend real, hardware físico, coordenadas reales ni varias pestañas.
-- Defecto controlado: se quitó temporalmente la deduplicación de la cola en una
-  rama de prueba; la corrida E2E falló. Se restauró la línea y la misma prueba
-  pasó. Los SHA y comandos exactos quedan en el reporte; el defecto no se integra.
+- Defecto controlado: en la rama temporal `tmp/week-08-duplicate-regression`
+  (SHA `59857202c296992040c758643208137e77e6e141`) se quitó la deduplicación de
+  la cola. `npm run test:unit` falló con `2 !== 1` en la prueba de idempotencia.
+  Se restauró la solución sobre `31380fb72e36c45df5e6c6ff115ca6f79e106a78` y
+  el mismo comando pasó. Las salidas están en
+  `reports/week-08/e2e-defect-failure.txt` y
+  `reports/week-08/e2e-defect-recovery.txt`; el defecto no se integra.
 - Limitación: el transporte remoto de la aplicación es sintético y no valida
   disponibilidad de un servicio externo.
 - Uso de IA: utilicé GitHub Copilot para estructurar los escenarios Playwright,
