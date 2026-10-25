@@ -90,6 +90,28 @@ sin usar estas opciones. No se capturan fotos ni coordenadas reales.
 - **Decisión técnica**: `docs/capabilities.md` documenta la matriz de estados, el flujo de fallback y las restricciones de plataforma.
 - **Pruebas**: `npm run test -- --run` ejecuta `tests/capabilities.spec.ts` junto con las suites acumuladas, incluyendo fallbacks de cámara, ubicación y notificaciones.
 
+Para verificar el avance de la **Semana 8: estrategia de pruebas**:
+
+```bash
+npm ci
+npm run lint
+npm run typecheck
+npm run build
+npm run test:unit
+npm run test:integration
+npx playwright install chromium
+npm run test:e2e
+make verify
+```
+
+En Windows, si `make` no está instalado, el equivalente exacto es `npm run verify`.
+La automatización equivalente está en `.github/workflows/academic-evaluation.yml`:
+instala dependencias, ejecuta lint estructural, tipos, build, pruebas unitarias,
+integración y E2E con Chromium. Publica los reportes de `reports/e2e/`,
+`reports/week-08/`, `test-results/` y `coverage/` como artefactos de Actions.
+La estrategia, trade-offs, limitaciones y el defecto controlado están en
+[`docs/test-strategy.md`](docs/test-strategy.md).
+
 El Makefile del repositorio define `make verify` como equivalente directo
 de `npm run verify`. Si `make` no está instalado en el entorno local, se
 documenta y ejecuta el equivalente exacto:

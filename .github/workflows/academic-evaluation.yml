@@ -15,6 +15,9 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:unit
       - run: npm run test:integration
@@ -23,4 +26,8 @@ jobs:
         if: always()
         with:
           name: e2e-report
-          path: reports/e2e/
+          path: |
+            reports/e2e/
+            reports/week-08/
+            test-results/
+            coverage/
