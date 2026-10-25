@@ -666,3 +666,152 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 - Uso declarado de IA:
   Usé un asistente de desarrollo con IA para analizar conflictos y revisar la
   cobertura. Validé manualmente los cambios y ejecuté las comprobaciones.
+
+---
+
+### Armando Valerio Salmeron — Semana 8
+
+- **Mi contribución concreta y enlace**:
+  Extraje la regla de captura en
+  [`src/lib/validation/inspection-capture.ts`](../src/lib/validation/inspection-capture.ts)
+  y la conecté al submit del formulario en
+  [`src/app/page.tsx`](../src/app/page.tsx). Agregué pruebas unitarias para
+  validación y cola en [`tests/unit/`](../tests/unit/), un comando reproducible
+  `test:unit` en [`package.json`](../package.json), el reporte de prueba y
+  cobertura en [`reports/week-08/unit-report.txt`](../reports/week-08/unit-report.txt),
+  y el diagnóstico, contratos y matriz riesgo–prueba en
+  [`docs/test-strategy.md`](../docs/test-strategy.md). Trabajo en la rama
+  `feat/week-08-validation-idempotency`; todavía no se ha integrado ni tiene
+  commit de entrega.
+
+- **Decisión técnica y motivo**:
+  Mantener la regla de validación como función pura compartida por el flujo y
+  las pruebas: `location` y `summary` son obligatorios tras recortar espacios,
+  mientras que `inspector` sigue siendo opcional. Para idempotencia reutilicé
+  `InspectionSyncQueue` con `MemoryQueueStorage`, usando el ID estable del
+  registro como llave, sin duplicar la regla en pruebas ni depender de red o
+  hardware.
+
+- **Comandos ejecutados y resultados reales**:
+  - `npm ci`: PASS, terminó con código 0 e instaló 32 paquetes. npm reportó
+    3 vulnerabilidades en dependencias (2 altas y 1 crítica); no ejecuté
+    `npm audit fix`.
+  - `npm run dev`: Next.js informó `Ready`; `http://localhost:3000` respondió
+    HTTP 200. La comprobación manual del formulario rechazó campos vacíos y
+    espacios, y aceptó datos sintéticos válidos.
+  - `npm test`: PASS, suite acumulada con starter, manifest, service worker,
+    offline, rendering, inspecciones, sincronización, capabilities y security.
+  - `npm run test:unit`: PASS, 6 pruebas aprobadas y 0 fallidas. Reporte:
+    [`reports/week-08/unit-report.txt`](../reports/week-08/unit-report.txt).
+    Cobertura de líneas informada: validación 100 %, cola 71.69 % y total de
+    archivos instrumentados 64.72 %.
+  - `npm run verify`: PASS, “Starter verificable: PASS”; genera
+    `reports/verification.json` y comprueba artefactos requeridos, no sustituye
+    pruebas ni build.
+  - `npm run build`: PASS, compilación optimizada y verificación de tipos
+    completadas.
+
+- **Qué demuestra y qué no**:
+  Las pruebas unitarias demuestran resultados explícitos para capturas válidas,
+  campos obligatorios vacíos o con espacios, reporte de campos faltantes,
+  reencolado del mismo ID sin duplicar el envío y actualización de versión al
+  cambiar el payload. La prueba manual confirma el mensaje del formulario y
+  una captura sintética aceptada en la interfaz. No demuestra persistencia en
+  IndexedDB, deduplicación del servidor, tratamiento de dos IDs distintos con
+  contenido equivalente, concurrencia entre pestañas ni funcionamiento en
+  hardware.
+
+- **Limitación**:
+  La demo guarda en memoria y no usa un backend; por ello, el escenario de
+  respuesta remota perdida no se reprodujo. La idempotencia se limita a un ID
+  estable y al almacenamiento usado por la cola. La cobertura de la cola es
+  parcial (71.69 % de líneas) y no implica que todos sus caminos estén
+  probados.
+
+- **Uso de IA (herramienta, propósito, partes influidas y validación propia)**:
+  Usé Copilot SDK en VS Code como asistente de desarrollo para estructurar la
+  función de validación, proponer casos de prueba y redactar la matriz y el
+  resumen de evidencia. Revisé el contrato frente al formulario y la cola
+  existentes, ejecuté personalmente los comandos anteriores y confirmé los
+  resultados reportados; la IA no ejecutó ni verificó por sí sola estas
+  comprobaciones.
+
+
+### Kevin Omar Sixto Lázaro — Semana 8
+
+- **Mi contribución concreta y enlace**:
+  Issue [#30](https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/issues/30).
+  Trabajo en la rama
+  [`feat/week-08-integration-persistence`](https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/tree/feat/week-08-integration-persistence),
+  creada desde `feat/week-08-validation-idempotency` para partir de los
+  contratos de la primera entrega. Implementé el almacenamiento persistente de
+  la cola en
+  [`src/lib/storage/indexeddb-queue-storage.ts`](../src/lib/storage/indexeddb-queue-storage.ts),
+  el punto de integración compartido con la interfaz en
+  [`src/lib/sync/inspection-store.ts`](../src/lib/sync/inspection-store.ts) y
+  el transporte sintético de la demo en
+  [`src/lib/sync/synthetic-remote.ts`](../src/lib/sync/synthetic-remote.ts).
+  Agregué las pruebas de integración, fixtures y el remoto controlado en
+  [`tests/integration/`](../tests/integration/), el comando `test:integration`
+  en [`package.json`](../package.json), la conexión de la interfaz en
+  [`src/app/page.tsx`](../src/app/page.tsx), la sección de integración y
+  persistencia en [`docs/test-strategy.md`](../docs/test-strategy.md) y el
+  reporte [`reports/week-08/integration-report.txt`](../reports/week-08/integration-report.txt).
+  Todavía no está integrada ni tiene commit de entrega; el SHA final común se
+  registra en Classroom después de la última integración.
+
+- **Decisión técnica y motivo**:
+  Implementé `QueueStorage` sobre IndexedDB con una copia en memoria y
+  escritura en segundo plano (`flush()` espera la persistencia). Así mantuve la
+  interfaz síncrona existente y no tuve que modificar `queue.ts` ni
+  `tests/sync.spec.ts`. Usé el `id` del registro como clave de idempotencia,
+  conforme al contrato de la primera entrega, y la interfaz conserva el mismo
+  `id` al reintentar una captura. El remoto controlado de las pruebas
+  deduplica por esa clave y puede simular una respuesta perdida. Interfaz y
+  pruebas usan el mismo `inspection-store.ts` para que la integración no sea
+  una función aislada. Al revisar `synchronize()` vi que lee la cola al inicio
+  y la reescribe al final, por lo que un guardado durante la sincronización
+  podía perderse; lo resolví serializando guardar y sincronizar en el store, sin
+  cambiar `queue.ts`, y lo cubrí con una prueba. También retiré el fallo
+  simulado de la demo (fallaba en intentos pares), porque ahora el error solo
+  aparece si falla el almacenamiento local.
+
+- **Comandos ejecutados y resultados reales**:
+  - `npm run test:integration`: PASS, 8 pruebas aprobadas y 0 fallidas.
+    Reporte:
+    [`reports/week-08/integration-report.txt`](../reports/week-08/integration-report.txt).
+  - `npm test`: PASS, suite acumulada con starter, manifest, service worker,
+    offline, rendering, inspecciones, sincronización, capabilities y security.
+  - `npx tsc --noEmit`: la primera ejecución falló con TS2307 porque faltaba
+    `src/lib/sync/synthetic-remote.ts`; después de crearlo terminó sin errores.
+  - `npm run build`: PASS, compiló correctamente y generó las 5 páginas
+    estáticas.
+
+- **Qué demuestra y qué no**:
+  Las pruebas demuestran que una inspección guardada sin conexión se lee desde
+  almacenamiento después de cerrar y reabrir el consumidor, que reconectar vacía
+  la cola y la deja vacía también en el almacenamiento, que reintentar la misma
+  operación tras una respuesta perdida deja exactamente un registro remoto, que
+  reencolar el mismo id no duplica la entrada, que los casos están aislados y
+  que guardar durante una sincronización no pierde la captura nueva. No
+  demuestran el comportamiento en IndexedDB de un navegador real (se usó
+  `fake-indexeddb` en Node), concurrencia entre pestañas, deduplicación de un
+  backend real ni de capturas equivalentes con ids distintos. No ejecuté una
+  verificación manual en el navegador ni un E2E de recarga; ese E2E corresponde
+  a la tercera entrega.
+
+- **Limitación**:
+  El transporte de la demo es sintético y no hay backend. Si el proceso termina
+  antes de `flush()`, la última escritura podría perderse. `synchronize()`
+  reintenta de inmediato y no consulta `nextAttemptAt`; la interfaz solo
+  sincroniza al cargar y al recuperar conexión. La página
+  `/inspecciones/[id]` solo lee los datos sintéticos fijos, por lo que una
+  inspección nueva no tiene página de detalle. Todos los datos son sintéticos.
+
+- **Uso de IA (herramienta, propósito, partes influidas y validación propia)**:
+  proponer el diseño y redactar borradores de código, pruebas y documentación.
+  Influyó en el almacenamiento IndexedDB, el store, las pruebas de integración,
+  el cambio en `page.tsx`, la sección de `docs/test-strategy.md` y el borrador
+  de esta evidencia. 
+  leí el código, ejecuté personalmente los comandos anteriores y los
+  resultados reportados son los de mi terminal.

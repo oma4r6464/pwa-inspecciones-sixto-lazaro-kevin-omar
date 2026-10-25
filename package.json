@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "test": "node tests/starter.spec.mjs && node scripts/run-security-spec.mjs",
+    "test:unit": "node --import tsx --test --experimental-test-coverage tests/unit/inspection-capture.test.ts tests/unit/inspection-queue.test.ts",
+    "test:integration": "node --import tsx --test tests/integration/offline-persistence.test.ts tests/integration/inspection-store.test.ts",
     "verify": "node scripts/verify.mjs"
   },
   "dependencies": {
