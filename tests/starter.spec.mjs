@@ -25,3 +25,22 @@ const transpiled = ts.transpileModule(manifestSpec, {
 await import(`data:text/javascript;base64,${Buffer.from(transpiled).toString("base64")}`);
 
 console.log("starter.spec.mjs: PASS");
+
+// Ejecutar prueba crítica de la Semana 2: tests/manifest.spec.ts
+await import("../scripts/run-spec.mjs");
+
+// Ejecutar pruebas críticas de la Semana 3:
+await import("../scripts/run-service-worker-spec.mjs");
+await import("../scripts/run-offline-spec.mjs");
+
+// Ejecutar prueba crítica de la Semana 4: tests/rendering.spec.ts
+await import("../scripts/run-rendering-spec.mjs");
+
+// Ejecutar prueba crítica de la Semana 4: listado CSR
+await import("./inspecciones.spec.mjs");
+
+// Ejecutar pruebas críticas de sincronización offline:
+await import("../scripts/run-sync-spec.mjs");
+
+// Ejecutar pruebas críticas de capacidades opcionales y sus fallbacks:
+await import("../scripts/run-capabilities-spec.mjs");

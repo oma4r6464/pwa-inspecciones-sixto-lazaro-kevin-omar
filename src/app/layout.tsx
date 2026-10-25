@@ -4,16 +4,17 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Inspecciones de laboratorio",
   description: "Shell instalable para inspecciones y mantenimiento de laboratorios con datos sinteticos.",
-  applicationName: "Inspecciones de Laboratorio",
+  applicationName: "Inspecciones de laboratorio PWA",
   manifest: "/manifest.webmanifest",
-  icons: {
-    icon: "/icons/icon-192.svg",
-    apple: "/icons/icon-192.svg"
-  }
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Inspecciones",
+  },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#123c3a",
+  themeColor: "#005a9c",
   colorScheme: "light",
   width: "device-width",
   initialScale: 1

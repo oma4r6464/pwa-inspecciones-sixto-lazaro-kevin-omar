@@ -12,7 +12,34 @@ const required = [
   "docs/requirements.md",
   "docs/decision-record.md",
   "tests/starter.spec.mjs",
-  "evidence/individual.md"
+  "evidence/individual.md",
+  "public/sw.js",
+  "src/lib/pwa/register-service-worker.ts",
+  "docs/cache-strategy.md",
+  "tests/service-worker.spec.ts",
+  "tests/offline.spec.ts",
+  "src/app/inspecciones/page.tsx",
+  "src/app/inspecciones/[id]/page.tsx",
+  "src/components/loading-state.tsx",
+  "docs/rendering-decision.md",
+  "tests/rendering.spec.ts",
+  "tests/inspecciones.spec.mjs",
+  "docs/security-controls.md",
+  "src/lib/security/safe-error.ts",
+  "tests/security.spec.ts",
+  "src/lib/sync/queue.ts",
+  "src/lib/storage/schema.ts",
+  "src/lib/sync/conflict-policy.ts",
+  "docs/sync-policy.md",
+  "tests/sync.spec.ts",
+  "reports/week-04/secret-scan.json",
+  "reports/week-04/negative-tests.json",
+  "evidence/week-04/engineering.json",
+  "src/lib/device/camera.ts",
+  "src/lib/device/geolocation.ts",
+  "src/lib/notifications/client.ts",
+  "tests/capabilities.spec.ts",
+  "docs/capabilities.md"
 ];
 
 const missing = required.filter((file) => !existsSync(resolve(root, file)));
@@ -34,4 +61,3 @@ if (missing.length > 0) {
 
 console.log("Starter verificable: PASS");
 console.log(`Reporte: ${report}`);
-

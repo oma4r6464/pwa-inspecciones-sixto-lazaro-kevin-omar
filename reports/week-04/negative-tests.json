@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "status": "pass",
+  "test": "tests/security.spec.ts",
+  "observed": "El contexto de error conserva sólo cinco campos técnicos y descarta campos sensibles o desconocidos.",
+  "syntheticInputs": true
+}

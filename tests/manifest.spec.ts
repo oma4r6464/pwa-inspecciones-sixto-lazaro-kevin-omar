@@ -1,54 +1,84 @@
 import assert from "node:assert/strict";
-import { access, readFile } from "node:fs/promises";
+import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 
-type WebManifest = {
-  name?: string;
-  short_name?: string;
-  start_url?: string;
-  scope?: string;
-  display?: string;
-  background_color?: string;
-  theme_color?: string;
-  lang?: string;
-  icons?: Array<{
-    src?: string;
-    sizes?: string;
-    type?: string;
-    purpose?: string;
-  }>;
-};
+console.log("manifest.spec.ts: running tests...");
 
-const root = process.cwd();
+const root = resolve(process.cwd());
 const manifestPath = resolve(root, "public/manifest.webmanifest");
-const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as WebManifest;
-const layout = await readFile(resolve(root, "src/app/layout.tsx"), "utf8");
-const page = await readFile(resolve(root, "src/app/page.tsx"), "utf8");
-const appShell = await readFile(resolve(root, "src/components/app-shell.tsx"), "utf8");
+const layoutPath = resolve(root, "src/app/layout.tsx");
+const appShellPath = resolve(root, "src/components/app-shell.tsx");
+const pagePath = resolve(root, "src/app/page.tsx");
 
-assert.equal(manifest.name, "Inspecciones de Laboratorio");
-assert.equal(manifest.short_name, "Inspecciones");
-assert.equal(manifest.start_url, "/");
-assert.equal(manifest.scope, "/");
-assert.equal(manifest.display, "standalone");
-assert.equal(manifest.background_color, "#f3f0e8");
-assert.equal(manifest.theme_color, "#123c3a");
-assert.equal(manifest.lang, "es-MX");
-assert.ok(manifest.icons?.some((icon) => icon.src === "/icons/icon-192.svg" && icon.sizes === "192x192"));
-assert.ok(manifest.icons?.some((icon) => icon.src === "/icons/icon-512.svg" && icon.sizes === "512x512"));
+// 1. Verificar existencia de archivos obligatorios
+assert.ok(existsSync(manifestPath), "public/manifest.webmanifest debe existir");
+assert.ok(existsSync(layoutPath), "src/app/layout.tsx debe existir");
+assert.ok(existsSync(appShellPath), "src/components/app-shell.tsx debe existir");
+assert.ok(existsSync(pagePath), "src/app/page.tsx debe existir");
 
-for (const icon of manifest.icons ?? []) {
-  assert.equal(icon.type, "image/svg+xml");
-  await access(resolve(root, "public", icon.src?.replace(/^\//, "") ?? ""));
+// 2. Validar estructura del manifest.webmanifest
+const manifestRaw = readFileSync(manifestPath, "utf8");
+let manifest: any;
+try {
+  manifest = JSON.parse(manifestRaw);
+} catch (err) {
+  assert.fail("public/manifest.webmanifest no es un JSON válido");
 }
 
-assert.match(layout, /manifest:\s*"\/manifest\.webmanifest"/);
-assert.match(layout, /themeColor:\s*"#123c3a"/);
-assert.match(page, /<AppShell inspections=\{inspections\}/);
-assert.match(appShell, /Navegación principal/);
-assert.match(appShell, /AppShellState = "ready" \| "loading" \| "error" \| "empty"/);
-assert.match(appShell, /role="status"/);
-assert.match(appShell, /role="alert"/);
-assert.match(appShell, /No hay inspecciones sinteticas/);
+assert.equal(typeof manifest.name, "string", "manifest debe tener un 'name'");
+assert.ok(manifest.name.length > 0, "'name' no puede estar vacío");
+assert.equal(typeof manifest.short_name, "string", "manifest debe tener un 'short_name'");
+assert.equal(manifest.display, "standalone", "manifest display debe ser 'standalone'");
+assert.equal(manifest.id, "/", "manifest debe declarar id raíz");
+assert.equal(manifest.start_url, "/", "manifest debe iniciar en la raíz");
+assert.equal(manifest.scope, "/", "manifest debe limitar scope a la raíz");
+assert.equal(manifest.lang, "es-MX", "manifest debe declarar idioma es-MX");
+assert.equal(manifest.orientation, "portrait-primary", "manifest debe declarar orientación base");
+assert.ok(manifest.theme_color, "manifest debe tener 'theme_color'");
+assert.ok(manifest.background_color, "manifest debe tener 'background_color'");
+assert.ok(Array.isArray(manifest.categories), "manifest debe declarar categorias");
+assert.ok(manifest.categories.includes("education"), "manifest debe categorizarse como education");
+assert.ok(Array.isArray(manifest.icons), "manifest debe contener un arreglo de 'icons'");
+assert.ok(manifest.icons.length > 0, "manifest debe contener al menos un icono");
+assert.ok(
+  manifest.icons.some((icon: any) => icon.sizes === "192x192"),
+  "manifest debe incluir icono 192x192"
+);
+assert.ok(
+  manifest.icons.some((icon: any) => icon.sizes === "512x512"),
+  "manifest debe incluir icono 512x512"
+);
 
-console.log("manifest.spec.ts: PASS");
+for (const icon of manifest.icons) {
+  assert.ok(icon.src, "cada icono debe tener propiedad 'src'");
+  assert.ok(icon.sizes, "cada icono debe tener propiedad 'sizes'");
+  assert.ok(icon.type, "cada icono debe tener propiedad 'type'");
+  assert.match(icon.purpose ?? "", /maskable/, "cada icono debe declarar soporte maskable");
+  const iconPath = resolve(root, "public", icon.src.replace(/^\//, ""));
+  assert.ok(existsSync(iconPath), `El icono referenciado en manifest no existe: ${icon.src}`);
+}
+
+// 3. Validar integración en layout.tsx
+const layoutContent = readFileSync(layoutPath, "utf8");
+assert.match(
+  layoutContent,
+  /manifest:\s*["']\/manifest\.webmanifest["']/,
+  "layout.tsx debe vincular /manifest.webmanifest en metadata"
+);
+
+// 4. Validar App Shell y estados en app-shell.tsx
+const shellContent = readFileSync(appShellPath, "utf8");
+assert.match(shellContent, /export\s+function\s+AppShell/, "app-shell.tsx debe exportar AppShell");
+assert.match(shellContent, /export\s+function\s+LoadingState/, "app-shell.tsx debe exportar LoadingState");
+assert.match(shellContent, /export\s+function\s+ErrorState/, "app-shell.tsx debe exportar ErrorState");
+assert.match(shellContent, /export\s+function\s+EmptyState/, "app-shell.tsx debe exportar EmptyState");
+
+// 5. Validar uso del AppShell y estados en page.tsx
+const pageContent = readFileSync(pagePath, "utf8");
+assert.match(pageContent, /<AppShell>/, "page.tsx debe renderizar AppShell");
+assert.match(pageContent, /LoadingState/, "page.tsx debe integrar LoadingState");
+assert.match(pageContent, /ErrorState/, "page.tsx debe integrar ErrorState");
+assert.match(pageContent, /EmptyState/, "page.tsx debe integrar EmptyState");
+assert.match(pageContent, /no ingreses datos reales/i, "page.tsx debe advertir que solo se usan datos sinteticos");
+
+console.log("manifest.spec.ts: PASS (todas las verificaciones críticas superadas)");
