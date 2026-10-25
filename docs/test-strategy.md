@@ -78,3 +78,42 @@ Las pruebas unitarias se ejecutan con `npm run test:unit`. La ejecución observa
 - No se cubre deduplicación de payloads equivalentes que tengan IDs diferentes.
 - Las vulnerabilidades reportadas por `npm ci` en la línea base se registran como observación; esta actividad no cambió dependencias ni verificó una remediación.
 - `npm run verify` comprueba presencia de artefactos y genera `reports/verification.json`; no sustituye `npm run test:unit`, `npm test` ni `npm run build`.
+
+
+## Integración y persistencia offline — Semana 8 (Issue #30)
+
+### Qué se probó y cómo
+Se probó que una inspección guardada sin conexión sobrevive a recrear el consumidor, que reconectar vacía la cola, y que reintentar la misma operación deja un solo registro remoto. Las pruebas usan datos sintéticos y no necesitan red, secretos ni servicios externos.
+
+- Almacenamiento: `src/lib/storage/indexeddb-queue-storage.ts` implementa `QueueStorage` sobre IndexedDB. Lee y escribe en memoria y persiste en segundo plano; `flush()` espera la escritura antes de cerrar o recrear.
+- Punto de integración: `src/lib/sync/inspection-store.ts`. Lo usan la interfaz (`src/app/page.tsx`) y las pruebas, de modo que no se prueban funciones aisladas.
+- Transporte remoto controlado: `tests/integration/helpers/fake-remote.ts`. Deduplica por la clave de idempotencia (`InspectionRecord.id`, definida en la primera entrega) y puede simular una respuesta perdida (el remoto acepta, el cliente recibe error).
+- Aislamiento: cada caso crea un `IDBFactory` nuevo de `fake-indexeddb` y su propio remoto, por lo que no comparten estado.
+- En producción la demo usa `src/lib/sync/synthetic-remote.ts`, un transporte sintético que acepta toda operación; no existe backend.
+
+### Matriz riesgo–prueba
+| Riesgo | Preparación y acción | Aserción | Prueba |
+|---|---|---|---|
+| El guardado offline solo vive en memoria | Guardar con el remoto sin conexión, cerrar y abrir de nuevo el almacenamiento | La inspección se lee con su payload; el remoto tiene 0 registros | `offline-persistence.test.ts` (guardado offline sobrevive…) |
+| La cola no se drena al reconectar | Reabrir, sincronizar con conexión | `synchronized` contiene el id, 1 registro remoto y la cola persistida queda vacía | `offline-persistence.test.ts` (reconectar drena…) |
+| Duplicado por respuesta perdida | El remoto acepta pero la respuesta falla; recrear y reintentar con el mismo id | 2 llamadas al remoto, 1 registro remoto, cola vacía | `offline-persistence.test.ts` y `inspection-store.test.ts` |
+| Reencolar tras recrear duplica la entrada | Encolar el mismo id dos veces en instancias distintas | 1 entrada pendiente | `offline-persistence.test.ts` |
+| Estado compartido entre casos | Dos bases aisladas | La segunda no ve datos de la primera | `offline-persistence.test.ts` |
+| Guardar durante una sincronización pierde la captura nueva | Iniciar `synchronize` con envío lento y guardar otra inspección en paralelo | La nueva sigue pendiente, persistida y el remoto tiene solo la primera | `inspection-store.test.ts` |
+
+### Comando y resultado
+Comando: `npm run test:integration`. Resultado observado: 8 pruebas, 8 aprobadas, 0 fallidas. Reporte en `reports/week-08/integration-report.txt`. Regresiones: `npm test` terminó con las suites acumuladas en PASS (starter, manifest, service worker, offline, rendering, inspecciones, sincronización, capabilities y security); `npx tsc --noEmit` terminó sin errores y `npm run build` compiló correctamente.
+
+### Fallos encontrados y decisiones
+- La interfaz guardaba solo en memoria y generaba un id nuevo con `Date.now()` en cada intento, por lo que un reintento podía representar una segunda captura. Ahora la captura conserva un id estable mientras se reintenta y se guarda en la cola persistente.
+- `InspectionSyncQueue.synchronize()` lee la cola al inicio y la reescribe al final: un guardado concurrente se perdía. Se corrigió sin modificar `queue.ts`, serializando guardar y sincronizar en `inspection-store.ts`; la prueba de concurrencia falla si se quita esa serialización.
+- Se eligió IndexedDB con caché en memoria para no cambiar la interfaz síncrona de `QueueStorage` ni romper `tests/sync.spec.ts`.
+- Se retiró el fallo simulado de la demo (fallaba en intentos pares); el estado de error ahora solo aparece si falla el almacenamiento local.
+
+### Límites
+- IndexedDB se probó con `fake-indexeddb` en Node, no en un navegador automatizado; no se cubre concurrencia entre pestañas.
+- La persistencia es en segundo plano: si el proceso termina antes de `flush()`, la última escritura podría perderse.
+- `synchronize()` reintenta de inmediato y no consulta `nextAttemptAt`; la interfaz solo vuelve a sincronizar al cargar o al recuperar conexión, sin temporizador de reintento. No se cambió para mantener las correcciones mínimas.
+- El remoto de la demo es sintético: no demuestra el comportamiento de un backend real.
+- `/inspecciones/[id]` solo lee los datos sintéticos fijos, por lo que una inspección nueva no tiene página de detalle.
+- No se cubre deduplicación de capturas equivalentes con ids distintos.

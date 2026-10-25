@@ -1,13 +1,21 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { inspections as syntheticInspections, type Inspection, type InspectionStatus } from "../lib/data/inspections";
 import { validateInspectionCapture } from "../lib/validation/inspection-capture";
 import { AppShell, EmptyState, ErrorState, LoadingState } from "../components/app-shell";
 import { CapabilityControls } from "../components/capability-controls";
+import {
+  newInspectionId,
+  openInspectionStore,
+  toViewInspection,
+  type InspectionStore
+} from "../lib/sync/inspection-store";
+import { syntheticRemoteSend } from "../lib/sync/synthetic-remote";
 
 type LoadStatus = "loading" | "error" | "empty" | "ready";
+type SyncState = "pending" | "synced";
 
 type NewInspectionInput = {
   location: string;
@@ -30,33 +38,6 @@ function loadInitialInspections(): Promise<Inspection[]> {
   });
 }
 
-function mockSaveInspection(
-  current: Inspection[],
-  input: NewInspectionInput,
-  attemptNumber: number
-): Promise<Inspection[]> {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const willFail = attemptNumber % 2 === 0;
-      if (willFail) {
-        reject(new Error("Fallo simulado al guardar la nueva inspección"));
-        return;
-      }
-      const newInspection: Inspection = {
-        id: `inspection-demo-${Date.now()}`,
-        location: input.location.trim(),
-        date: new Date().toISOString().slice(0, 10),
-        inspector: input.inspector.trim() || "Sin asignar",
-        status: input.status,
-        statusLabel: input.status === "ok" ? "Sin incidencias" : "Requiere atención",
-        findings: input.status === "ok" ? 0 : 1,
-        summary: input.summary.trim()
-      };
-      resolve([newInspection, ...current]);
-    }, 1200);
-  });
-}
-
 export default function HomePage() {
   const [status, setStatus] = useState<LoadStatus>("loading");
   const [data, setData] = useState<Inspection[]>([]);
@@ -64,26 +45,60 @@ export default function HomePage() {
   const [form, setForm] = useState<NewInspectionInput>(EMPTY_FORM);
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const attemptCount = useRef(0);
+  const [syncState, setSyncState] = useState<Record<string, SyncState>>({});
+  const store = useRef<InspectionStore | null>(null);
   const pendingInput = useRef<NewInspectionInput | null>(null);
+  const pendingId = useRef<string | null>(null);
 
-  // Carga inicial al entrar a la página.
-  useEffect(() => {
-    let cancelled = false;
-    loadInitialInspections().then((result) => {
-      if (cancelled) return;
-      if (result.length === 0) {
-        setStatus("empty");
-      } else {
-        setData(result);
-        setStatus("ready");
-      }
+  const runSync = useCallback(async () => {
+    const current = store.current;
+    if (!current || !navigator.onLine) return;
+    const result = await current.synchronize(true, syntheticRemoteSend);
+    if (result.synchronized.length === 0) return;
+    setSyncState((prev) => {
+      const next = { ...prev };
+      result.synchronized.forEach((id) => {
+        next[id] = "synced";
+      });
+      return next;
     });
-    return () => {
-      cancelled = true;
-    };
   }, []);
 
+  // Carga inicial: datos sintéticos + inspecciones pendientes guardadas en IndexedDB.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const base = await loadInitialInspections();
+      let opened: InspectionStore | null = null;
+      try {
+        opened = await openInspectionStore(window.indexedDB);
+      } catch {
+        opened = null;
+      }
+      if (cancelled) {
+        opened?.close();
+        return;
+      }
+      store.current = opened;
+      const queued = opened ? opened.pending() : [];
+      setSyncState(Object.fromEntries(queued.map((item) => [item.id, "pending" as SyncState])));
+      const all = [...queued.map(toViewInspection), ...base];
+      setData(all);
+      setStatus(all.length === 0 ? "empty" : "ready");
+      void runSync();
+    })();
+    return () => {
+      cancelled = true;
+      store.current?.close();
+      store.current = null;
+    };
+  }, [runSync]);
+
+  // Al recuperar la conexión se drena la cola pendiente.
+  useEffect(() => {
+    window.addEventListener("online", runSync);
+    return () => window.removeEventListener("online", runSync);
+  }, [runSync]);
 
   useEffect(() => {
     if (!successMessage) return;
@@ -91,19 +106,37 @@ export default function HomePage() {
     return () => clearTimeout(timer);
   }, [successMessage]);
 
+  const saveInspection = async (input: NewInspectionInput, id: string): Promise<Inspection> => {
+    const current = store.current;
+    if (!current) throw new Error("Almacenamiento local no disponible");
+    const item = await current.save(id, {
+      result: input.status,
+      notes: input.summary.trim(),
+      location: input.location.trim(),
+      inspector: input.inspector.trim() || "Sin asignar",
+      date: new Date().toISOString().slice(0, 10),
+      findings: input.status === "ok" ? 0 : 1
+    });
+    return toViewInspection(item);
+  };
+
   const runSave = (input: NewInspectionInput) => {
     pendingInput.current = input;
-    attemptCount.current += 1;
+    // La misma captura conserva su id al reintentar: es la clave de idempotencia.
+    if (!pendingId.current) pendingId.current = newInspectionId();
     setShowForm(false);
     setStatus("loading");
 
-    mockSaveInspection(data, input, attemptCount.current)
-      .then((result) => {
-        setData(result);
+    saveInspection(input, pendingId.current)
+      .then((inspection) => {
+        setData((current) => [inspection, ...current.filter((item) => item.id !== inspection.id)]);
+        setSyncState((prev) => ({ ...prev, [inspection.id]: "pending" }));
         setStatus("ready");
         setSuccessMessage(`Inspección "${input.location.trim()}" agregada correctamente.`);
         setForm(EMPTY_FORM);
         pendingInput.current = null;
+        pendingId.current = null;
+        void runSync();
       })
       .catch(() => {
         setStatus("error");
@@ -136,7 +169,8 @@ export default function HomePage() {
   const handleRestore = () => {
     setStatus("loading");
     loadInitialInspections().then((result) => {
-      setData(result);
+      const queued = store.current ? store.current.pending().map(toViewInspection) : [];
+      setData([...queued, ...result]);
       setStatus("ready");
     });
   };
@@ -254,6 +288,17 @@ export default function HomePage() {
                       </span>
                       <span className="muted">{inspection.date}</span>
                     </div>
+                    {syncState[inspection.id] && (
+                      <p
+                        className="muted"
+                        data-inspection-id={inspection.id}
+                        data-sync-status={syncState[inspection.id]}
+                      >
+                        {syncState[inspection.id] === "pending"
+                          ? "Pendiente de sincronizar"
+                          : "Sincronizada"}
+                      </p>
+                    )}
                     <h3>{inspection.location}</h3>
                     <p>{inspection.summary}</p>
                     <dl>
