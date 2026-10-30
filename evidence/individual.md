@@ -874,7 +874,7 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 
 ---
 
-### Kevin Omar Sixto Lázaro — Semana 9: modelo de amenazas y validación de capturas
+### ArmandoValerio (GitHub) — Semana 9: modelo de amenazas y validación de capturas
 
 - **Contribución concreta y referencia**: trabajo en la rama
   `feat/week-09-security-validation`. La contribución incluye
@@ -885,7 +885,8 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
   [la cola de sincronización](../src/lib/sync/queue.ts), además de sus pruebas.
   Commit de implementación:
   [`9bfe13dcc3ceed1ffa9c8603b8d59dd1059851e8`](../commit/9bfe13dcc3ceed1ffa9c8603b8d59dd1059851e8).
-  La rama todavía no está publicada en GitHub.
+  La rama está publicada en GitHub. Cuenta de GitHub responsable de esta
+  evidencia: [`ArmandoValerio`](https://github.com/ArmandoValerio).
 
 - **Decisión técnica**: validar en más de un límite de confianza, no solo en el
   formulario. La captura se normaliza y comprueba al enviarse, el almacén
