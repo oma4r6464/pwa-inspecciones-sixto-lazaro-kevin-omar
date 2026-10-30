@@ -4,6 +4,7 @@ import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { inspections as syntheticInspections, type Inspection, type InspectionStatus } from "../lib/data/inspections";
 import { validateInspectionCapture } from "../lib/validation/inspection-capture";
+import { createSafeErrorContext, type SafeErrorContext } from "../lib/security/safe-error";
 import { AppShell, EmptyState, ErrorState, LoadingState } from "../components/app-shell";
 import { CapabilityControls } from "../components/capability-controls";
 import {
@@ -45,6 +46,9 @@ export default function HomePage() {
   const [form, setForm] = useState<NewInspectionInput>(EMPTY_FORM);
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<SafeErrorContext | null>(null);
+  const [syncError, setSyncError] = useState<SafeErrorContext | null>(null);
+  const [storageError, setStorageError] = useState<SafeErrorContext | null>(null);
   const [syncState, setSyncState] = useState<Record<string, SyncState>>({});
   const store = useRef<InspectionStore | null>(null);
   const pendingInput = useRef<NewInspectionInput | null>(null);
@@ -53,15 +57,34 @@ export default function HomePage() {
   const runSync = useCallback(async () => {
     const current = store.current;
     if (!current || !navigator.onLine) return;
-    const result = await current.synchronize(true, syntheticRemoteSend);
-    if (result.synchronized.length === 0) return;
-    setSyncState((prev) => {
-      const next = { ...prev };
-      result.synchronized.forEach((id) => {
-        next[id] = "synced";
+    try {
+      const result = await current.synchronize(true, syntheticRemoteSend);
+      if (result.failed.length > 0) {
+        setSyncError(
+          createSafeErrorContext({
+            incidentId: "inspection-sync",
+            correlationId: "sync-local"
+          })
+        );
+      } else {
+        setSyncError(null);
+      }
+      if (result.synchronized.length === 0) return;
+      setSyncState((prev) => {
+        const next = { ...prev };
+        result.synchronized.forEach((id) => {
+          next[id] = "synced";
+        });
+        return next;
       });
-      return next;
-    });
+    } catch {
+      setSyncError(
+        createSafeErrorContext({
+          incidentId: "inspection-sync",
+          correlationId: "sync-local"
+        })
+      );
+    }
   }, []);
 
   // Carga inicial: datos sintéticos + inspecciones pendientes guardadas en IndexedDB.
@@ -73,12 +96,19 @@ export default function HomePage() {
       try {
         opened = await openInspectionStore(window.indexedDB);
       } catch {
+        setStorageError(
+          createSafeErrorContext({
+            incidentId: "inspection-storage",
+            correlationId: "storage-local"
+          })
+        );
         opened = null;
       }
       if (cancelled) {
         opened?.close();
         return;
       }
+      if (opened) setStorageError(null);
       store.current = opened;
       const queued = opened ? opened.pending() : [];
       setSyncState(Object.fromEntries(queued.map((item) => [item.id, "pending" as SyncState])));
@@ -111,9 +141,9 @@ export default function HomePage() {
     if (!current) throw new Error("Almacenamiento local no disponible");
     const item = await current.save(id, {
       result: input.status,
-      notes: input.summary.trim(),
-      location: input.location.trim(),
-      inspector: input.inspector.trim() || "Sin asignar",
+      notes: input.summary,
+      location: input.location,
+      inspector: input.inspector,
       date: new Date().toISOString().slice(0, 10),
       findings: input.status === "ok" ? 0 : 1
     });
@@ -129,6 +159,7 @@ export default function HomePage() {
 
     saveInspection(input, pendingId.current)
       .then((inspection) => {
+        setSaveError(null);
         setData((current) => [inspection, ...current.filter((item) => item.id !== inspection.id)]);
         setSyncState((prev) => ({ ...prev, [inspection.id]: "pending" }));
         setStatus("ready");
@@ -139,6 +170,12 @@ export default function HomePage() {
         void runSync();
       })
       .catch(() => {
+        setSaveError(
+          createSafeErrorContext({
+            incidentId: "inspection-save",
+            correlationId: pendingId.current ?? "save-local"
+          })
+        );
         setStatus("error");
       });
   };
@@ -147,11 +184,11 @@ export default function HomePage() {
     event.preventDefault();
     const validation = validateInspectionCapture(form);
     if (!validation.valid) {
-      setFormError("Ubicación y resumen son obligatorios.");
+      setFormError("Revisa los campos: hay valores vacíos, demasiado largos o no permitidos.");
       return;
     }
     setFormError(null);
-    runSave(form);
+    runSave(validation.value);
   };
 
   const handleRetry = () => {
@@ -196,6 +233,19 @@ export default function HomePage() {
               ✓
             </span>
             <span>{successMessage}</span>
+          </div>
+        )}
+
+        {storageError && (
+          <div className="form-error" role="alert">
+            El almacenamiento local no está disponible. No se pueden guardar capturas ahora.
+            {" "}Referencia: {storageError.incidentId}
+          </div>
+        )}
+        {syncError && (
+          <div className="form-error" role="alert">
+            No se pudo completar la sincronización. Los registros no sincronizados siguen en la
+            cola local. {" "}Referencia: {syncError.incidentId}
           </div>
         )}
 
@@ -271,7 +321,15 @@ export default function HomePage() {
 
           {status === "loading" && <LoadingState />}
 
-          {status === "error" && <ErrorState onRetry={handleRetry} />}
+          {status === "error" && (
+            <ErrorState
+              title="No se pudo guardar la inspección"
+              description={`La captura no se guardó. Puedes reintentar sin volver a llenar el formulario. Referencia: ${
+                saveError?.incidentId ?? "inspection-save"
+              }`}
+              onRetry={handleRetry}
+            />
+          )}
 
           {status === "empty" && (
             <EmptyState actionLabel="Restaurar datos sintéticos" onAction={handleRestore} />

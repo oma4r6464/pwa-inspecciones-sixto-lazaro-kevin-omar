@@ -14,7 +14,18 @@ import {
 import { InspectionSyncQueue, MemoryQueueStorage } from "../src/lib/sync/queue";
 
 const inspection = (id: string, updatedAt: number, notes = "dato sintetico") =>
-  createInspectionRecord(id, { result: "aprobada", notes }, updatedAt);
+  createInspectionRecord(
+    id,
+    {
+      result: "ok",
+      notes,
+      location: "Laboratorio Demo 08",
+      inspector: "Técnica Demo",
+      date: "2026-10-24",
+      findings: 0
+    },
+    updatedAt
+  );
 
 const version = (
   id: string,
@@ -25,7 +36,7 @@ const version = (
   id,
   version: versionNumber,
   updatedAt,
-  payload: { result: "aprobada", notes: "dato sintetico", ...payload }
+  payload: { result: "ok", notes: "dato sintetico", ...payload }
 });
 
 {
