@@ -883,8 +883,9 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
   la integración con [el flujo de captura](../src/app/page.tsx),
   [el almacén offline](../src/lib/sync/inspection-store.ts) y
   [la cola de sincronización](../src/lib/sync/queue.ts), además de sus pruebas.
-  SHA/enlace de commit: pendiente; el trabajo todavía no está comprometido ni
-  publicado en GitHub. Se añadirá la referencia definitiva después del commit.
+  Commit de implementación:
+  [`9bfe13dcc3ceed1ffa9c8603b8d59dd1059851e8`](../commit/9bfe13dcc3ceed1ffa9c8603b8d59dd1059851e8).
+  La rama todavía no está publicada en GitHub.
 
 - **Decisión técnica**: validar en más de un límite de confianza, no solo en el
   formulario. La captura se normaliza y comprueba al enviarse, el almacén
