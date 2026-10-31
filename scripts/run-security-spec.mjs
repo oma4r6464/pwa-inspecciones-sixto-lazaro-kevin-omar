@@ -10,9 +10,18 @@ const compilerOptions = {
 const helperSource = readFileSync(resolve(root, "src/lib/security/safe-error.ts"), "utf8");
 const helperResult = ts.transpileModule(helperSource, { compilerOptions });
 const helperUri = `data:text/javascript;base64,${Buffer.from(helperResult.outputText).toString("base64")}`;
+const validationSource = readFileSync(
+  resolve(root, "src/lib/validation/inspection-capture.ts"),
+  "utf8"
+);
+const validationResult = ts.transpileModule(validationSource, { compilerOptions });
+const validationUri = `data:text/javascript;base64,${Buffer.from(validationResult.outputText).toString("base64")}`;
 const source = readFileSync(resolve(root, "tests/security.spec.ts"), "utf8").replace(
   'import { createSafeErrorContext } from "../src/lib/security/safe-error";',
   `const { createSafeErrorContext } = await import("${helperUri}");`
+).replace(
+  'import { validateInspectionCapture } from "../src/lib/validation/inspection-capture";',
+  `const { validateInspectionCapture } = await import("${validationUri}");`
 );
 const result = ts.transpileModule(source, {
   compilerOptions
