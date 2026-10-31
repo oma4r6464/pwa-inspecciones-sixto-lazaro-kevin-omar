@@ -876,6 +876,7 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 
 ### Jesus Emanuel Vega Medina (3523110340) — Semana 9
 
+- **SHA de la contribución:** `bc2edde012bcdca67f4148f8cae43d96683bc578`.
 - **Contribución concreta:** agregué el inventario real de datos en
   `docs/privacy-data-inventory.md`, la política `public/robots.txt`, la
   ampliación de `tests/security.spec.ts` y los encabezados CSP y
