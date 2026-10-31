@@ -871,3 +871,43 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
   de esta evidencia. 
   leí el código, ejecuté personalmente los comandos anteriores y los
   resultados reportados son los de mi terminal.
+
+---
+
+### Jesus Emanuel Vega Medina (3523110340) — Semana 9
+
+- **Contribución concreta:** agregué el inventario real de datos en
+  `docs/privacy-data-inventory.md`, la política `public/robots.txt`, la
+  ampliación de `tests/security.spec.ts` y los encabezados CSP y
+  `Permissions-Policy` en `next.config.mjs`. También actualicé el verificador
+  para exigir los artefactos de esta entrega.
+- **Decisión técnica:** mantener el offline existente y documentar sus límites,
+  incluyendo la cola en IndexedDB, en vez de atribuir cifrado o borrado que no
+  existen. La CSP restringe el mismo origen, bloquea objetos y marcos, y la
+  política de permisos conserva sólo cámara, geolocalización y notificaciones
+  opcionales; micrófono, pagos y USB quedan desactivados. `robots.txt` bloquea
+  rastreo, pero se documenta como una instrucción y no como seguridad.
+- **Prueba ejecutada:** `npm test -- --run`, `npm run lint`, `npm run typecheck`,
+  `npm run build` y `npm run verify`. La prueba de seguridad conserva el caso
+  de normalización de errores y agrega casos positivos y negativos de
+  validación, ausencia de detalles sensibles, `robots.txt`, CSP y permisos.
+- **Resultado real:** `npm ci` terminó correctamente con 35 paquetes
+  instalados; informó 3 vulnerabilidades heredadas (2 altas y 1 crítica).
+  `npm test -- --run` pasó starter, manifest, service worker, offline,
+  rendering, inspecciones, sync, capabilities y security. También pasaron
+  `npm run lint` (66 archivos), `npm run typecheck`, `npm run build` y
+  `npm run verify`. Con `npm start`, `GET /robots.txt` devolvió 200 y `GET /`
+  devolvió CSP y `Permissions-Policy` con los valores esperados.
+- **Limitación:** no hay backend, autenticación, cifrado local, retención
+  automática ni navegador físico en esta entrega; `robots.txt` no impide acceso
+  y los permisos dependen del navegador.
+- **Cambio defendible:** los datos sintéticos permanecen aislados del
+  transporte externo; un error de validación no devuelve el contenido recibido
+  y la configuración del navegador se comprueba por archivo y comportamiento
+  reproducible.
+- **Uso de IA:** utilicé Copilot SDK en VS Code para revisar el código
+  existente, proponer la estructura del inventario y los casos de prueba.
+  Influyó en `docs/privacy-data-inventory.md`, `tests/security.spec.ts`,
+  `scripts/run-security-spec.mjs`, `next.config.mjs`, `public/robots.txt` y
+  esta sección. Validé manualmente cada cambio, revisé las rutas reales y
+  ejecuté los comandos indicados.
