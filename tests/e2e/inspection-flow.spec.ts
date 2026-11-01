@@ -83,3 +83,14 @@ test("fallo de almacenamiento muestra errores controlados sin detalles internos"
   await expect(page.getByText(/Referencia: inspection-save/)).toBeVisible();
   await expect(page.getByText(/synthetic-storage-detail-must-not-be-shown/)).toHaveCount(0);
 });
+
+test("el contenido con marcado se guarda y representa como texto sin ejecutarse", async ({ page }) => {
+  const markup = '<img src=x onerror="window.syntheticXss=true">';
+  await page.getByRole("button", { name: "+ Agregar inspección" }).click();
+  await page.getByLabel("Ubicación sintética *").fill("Laboratorio Sintetico Texto Seguro");
+  await page.getByLabel("Resumen *").fill(markup);
+  await page.getByRole("button", { name: "Guardar inspección" }).click();
+  await expect(page.getByText(markup, { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => "syntheticXss" in window)).toBe(false);
+  await expect(page.locator('img[src="x"]')).toHaveCount(0);
+});

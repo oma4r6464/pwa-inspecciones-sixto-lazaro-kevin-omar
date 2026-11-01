@@ -48,8 +48,9 @@ recibir datos reales.
 La CSP limita scripts, conexiones, workers y manifiesto al mismo origen,
 bloquea objetos embebidos y marcos, y deja `unsafe-inline` solo porque el
 renderizado de Next.js lo requiere en esta configuracion. `Permissions-Policy`
-permite camara, geolocalizacion y notificaciones únicamente al mismo origen y
-desactiva microfono, pagos y USB. Estos encabezados reducen superficie del
+permite camara y geolocalizacion únicamente al mismo origen y
+desactiva microfono, pagos y USB. Las notificaciones se solicitan por acción
+explícita y no están controladas por esta cabecera. Estos encabezados reducen superficie del
 navegador, pero no reemplazan validacion de entradas, permisos del sistema ni
 autenticacion.
 
@@ -66,3 +67,9 @@ npm run verify
 La prueba de seguridad comprueba la normalizacion del contexto de error, la
 validacion positiva y negativa de capturas, la ausencia de detalles sensibles
 en errores, la existencia de `robots.txt` y la configuracion de CSP y permisos.
+
+La interfaz actual usa un proveedor de ubicación sintético. El módulo
+reutilizable admite el proveedor del navegador, pero no se conecta a la
+captura actual. La sincronización confirmada retira los registros de la cola;
+los pendientes permanecen sin expiración. Los límites de retención anteriores
+no implican que los registros confirmados permanezcan en IndexedDB.

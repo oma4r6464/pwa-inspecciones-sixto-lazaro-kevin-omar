@@ -1,5 +1,10 @@
 # Controles de seguridad y privacidad — Semana 04
 
+Documento histórico de Semana 4. El estado vigente de la aplicación con
+IndexedDB y controles de Semana 9 se describe en
+[threat-model.md](threat-model.md) y
+[privacy-data-inventory.md](privacy-data-inventory.md).
+
 ## Alcance y datos revisados
 
 La aplicación trabaja sólo con datos sintéticos en memoria. Se revisaron los

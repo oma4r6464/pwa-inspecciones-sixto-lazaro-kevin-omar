@@ -2,8 +2,8 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 const root = process.cwd();
-const roots = ['src', 'tests', 'scripts', 'docs', '.github/workflows'];
-const files = ['README.md', 'package.json', 'playwright.config.ts'];
+const roots = ['src', 'tests', 'scripts', 'docs', 'public', 'evidence', '.github/workflows'];
+const files = ['README.md', 'package.json', 'package-lock.json', 'next.config.mjs', 'playwright.config.ts'];
 const secretPatterns = [/AKIA[0-9A-Z]{16}/, /gh[pousr]_[A-Za-z0-9_]{20,}/, /BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY/, /sk-[A-Za-z0-9]{20,}/];
 const conflictMarkers = [/^<<<<<<< /m, /^=======$/m, /^>>>>>>> /m];
 
