@@ -112,6 +112,61 @@ integración y E2E con Chromium. Publica los reportes de `reports/e2e/`,
 La estrategia, trade-offs, limitaciones y el defecto controlado están en
 [`docs/test-strategy.md`](docs/test-strategy.md).
 
+## Semana 9: seguridad y privacidad
+
+Los entregables están en [modelo de amenazas](docs/threat-model.md),
+[inventario de privacidad](docs/privacy-data-inventory.md), `src/lib/security/`,
+`tests/security.spec.ts` y `public/robots.txt`. Se conserva el flujo offline
+con datos sintéticos; los controles validan entradas antes de guardar/enviar,
+restringen recursos y permisos y evitan exponer el contenido en errores.
+
+```bash
+npm ci
+npm run lint
+npm run typecheck
+npm run build
+npm test -- --run
+npm run test:unit
+npm run test:integration
+npx playwright install chromium
+npm run test:e2e
+make verify
+```
+
+En Windows sin Make, ejecutar `npm run verify`: es el equivalente exacto del
+Makefile. Para revisar headers con el servidor de producción activo, ejecutar
+`npm start` y, en otra terminal, `npm run check:headers`.
+
+El workflow del kit `.github/workflows/week-09-w09-security-privacy.yml`
+ejecuta instalación, build y pruebas; publica `test-results/security-report.json`
+con fecha UTC, revisión y resultado real. Los checks acumulados se conservan.
+El workflow académico existente publica el reporte HTML E2E y trazas como
+artefactos de Actions. Los reportes temporales se generan localmente o en CI;
+no se versionan. `npm run verify` genera además `reports/verification.json`,
+que comprueba artefactos y no reemplaza las pruebas de comportamiento.
+
+El check público de Semana 9 se conserva en `public-tests/week-09/check.sh`
+para mantener el de Semana 1. Ejecutarlo desde la raíz con
+`bash public-tests/week-09/check.sh`. En Git Bash instalado en Windows puede
+invocarse con `& 'C:\Program Files\Git\bin\bash.exe' --noprofile --norc public-tests/week-09/check.sh`.
+El original imprime coincidencias de palabras en documentación y lockfile,
+pero termina `PUBLIC_OK`/código 0 incluso cuando encuentra coincidencias:
+la negación `! rg` no aborta con `set -e`. Por tanto, ese resultado no prueba
+ausencia de credenciales. El lint estructural y la revisión de cambios son
+complementarios y tampoco constituyen una garantía exhaustiva.
+
+Límites: la CSP permite scripts inline para la hidratación de Next.js; no
+bloquea por sí sola un script inline inyectado. La prueba E2E verifica que el
+formulario representa marcado como texto. IndexedDB carece de cifrado y
+retención automática; no hay autenticación ni backend. HTTPS es obligatorio
+para un despliegue y no se acredita con una ejecución en localhost.
+La auditoría de esta entrega informa 2 vulnerabilidades altas y 1 crítica
+en el árbol de dependencias. No se declara una solución libre de riesgos;
+resolver Next.js requiere evaluar una migración mayor fuera del incremento.
+
+La entrega utiliza el SHA completo fijado en Classroom, el enlace al CI de
+esa revisión y [la evidencia individual](evidence/individual.md).
+
 El Makefile del repositorio define `make verify` como equivalente directo
 de `npm run verify`. Si `make` no está instalado en el entorno local, se
 documenta y ejecuta el equivalente exacto:

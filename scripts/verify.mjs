@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
+import { execFileSync } from "node:child_process";
 
 const root = resolve(import.meta.dirname, "..");
 const required = [
@@ -28,6 +29,10 @@ const required = [
   "src/lib/security/safe-error.ts",
   "tests/security.spec.ts",
   "docs/privacy-data-inventory.md",
+  "docs/threat-model.md",
+  "src/lib/security/inspection-input.ts",
+  "src/lib/security/security-headers.mjs",
+  ".github/workflows/week-09-w09-security-privacy.yml",
   "public/robots.txt",
   "src/lib/sync/queue.ts",
   "src/lib/storage/schema.ts",
@@ -48,6 +53,7 @@ const missing = required.filter((file) => !existsSync(resolve(root, file)));
 const result = {
   schemaVersion: 1,
   checkedAt: new Date().toISOString(),
+  revision: process.env.GITHUB_SHA ?? execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(),
   status: missing.length === 0 ? "pass" : "fail",
   missing
 };

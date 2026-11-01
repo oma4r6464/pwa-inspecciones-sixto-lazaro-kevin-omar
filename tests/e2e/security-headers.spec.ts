@@ -26,6 +26,8 @@ test("la CSP no bloquea la navegación, el service worker ni las opciones de la 
   page.on("pageerror", (error) => violations.push(error.message));
 
   await page.goto("/");
+  await page.waitForFunction(() => Boolean(navigator.serviceWorker?.controller));
+  await page.waitForLoadState("networkidle");
   await expect(page.getByRole("heading", { name: "Inspecciones de laboratorio" })).toBeVisible();
   await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));
 
@@ -39,4 +41,24 @@ test("la CSP no bloquea la navegación, el service worker ni las opciones de la 
   await expect(page.locator("h1").first()).toBeVisible();
 
   expect(violations).toEqual([]);
+});
+
+test("connect-src impide conexiones ajenas sin enviar datos a terceros", async ({ page }) => {
+  let externalRequests = 0;
+  await page.route("https://security-test.invalid/**", async (route) => {
+    externalRequests += 1;
+    await route.abort();
+  });
+  await page.goto("/");
+  await page.waitForFunction(() => Boolean(navigator.serviceWorker?.controller));
+  await page.waitForLoadState("networkidle");
+  const blockedDirective = await page.evaluate(async () => {
+    const violation = new Promise<string>((resolve) => {
+      document.addEventListener("securitypolicyviolation", (event) => resolve(event.effectiveDirective), { once: true });
+    });
+    await fetch("https://security-test.invalid/synthetic").catch(() => undefined);
+    return violation;
+  });
+  expect(blockedDirective).toBe("connect-src");
+  expect(externalRequests).toBe(0);
 });
