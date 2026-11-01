@@ -1,19 +1,14 @@
-export type InspectionCaptureInput = {
-  location: string;
-  summary: string;
-};
+import {
+  validateInspectionInput,
+  type InspectionCaptureInput,
+  type InspectionInputValidation,
+  type ValidatedInspectionCapture
+} from "../security/inspection-input";
 
-export type InspectionCaptureValidation =
-  | { valid: true }
-  | { valid: false; missingFields: Array<keyof InspectionCaptureInput> };
+export type { InspectionCaptureInput, InspectionInputValidation, ValidatedInspectionCapture };
 
 export function validateInspectionCapture(
-  input: InspectionCaptureInput
-): InspectionCaptureValidation {
-  const missingFields: Array<keyof InspectionCaptureInput> = [];
-
-  if (!input.location.trim()) missingFields.push("location");
-  if (!input.summary.trim()) missingFields.push("summary");
-
-  return missingFields.length === 0 ? { valid: true } : { valid: false, missingFields };
+  input: unknown
+): InspectionInputValidation<ValidatedInspectionCapture> {
+  return validateInspectionInput(input);
 }

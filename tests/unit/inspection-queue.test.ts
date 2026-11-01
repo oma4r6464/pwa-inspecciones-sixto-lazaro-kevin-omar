@@ -7,7 +7,14 @@ test("enqueuing the same inspection twice keeps one item and sends it once", asy
   const queue = new InspectionSyncQueue(new MemoryQueueStorage());
   const record = createInspectionRecord(
     "inspection-synthetic-08",
-    { result: "aprobada", notes: "captura sintética" },
+    {
+      result: "ok",
+      notes: "captura sintética",
+      location: "Laboratorio Demo 08",
+      inspector: "Técnica Demo",
+      date: "2026-10-24",
+      findings: 0
+    },
     1_000
   );
 
@@ -34,7 +41,14 @@ test("a changed payload for the same ID updates one queued item as a new version
   queue.enqueue(
     createInspectionRecord(
       "inspection-synthetic-08",
-      { result: "aprobada", notes: "primera captura sintética" },
+      {
+        result: "ok",
+        notes: "primera captura sintética",
+        location: "Laboratorio Demo 08",
+        inspector: "Técnica Demo",
+        date: "2026-10-24",
+        findings: 0
+      },
       1_000
     )
   );
@@ -42,7 +56,14 @@ test("a changed payload for the same ID updates one queued item as a new version
   const updated = queue.enqueue(
     createInspectionRecord(
       "inspection-synthetic-08",
-      { result: "aprobada", notes: "edición sintética" },
+      {
+        result: "ok",
+        notes: "edición sintética",
+        location: "Laboratorio Demo 08",
+        inspector: "Técnica Demo",
+        date: "2026-10-24",
+        findings: 0
+      },
       1_001
     )
   );
@@ -50,4 +71,37 @@ test("a changed payload for the same ID updates one queued item as a new version
   assert.equal(queue.pending().length, 1);
   assert.equal(updated.version, 2);
   assert.equal(queue.getById("inspection-synthetic-08")?.payload.notes, "edición sintética");
+});
+
+test("synchronization does not send invalid data already present in storage", async () => {
+  const storage = new MemoryQueueStorage();
+  storage.save([
+    {
+      id: "inspection-synthetic-invalid",
+      updatedAt: 1_000,
+      payload: {
+        result: "invalid",
+        notes: "resumen sintético",
+        location: "Laboratorio Demo 08",
+        inspector: "Técnica Demo",
+        date: "2026-10-24",
+        findings: 0
+      },
+      attempts: 0,
+      queuedAt: 1_000
+    }
+  ]);
+  const queue = new InspectionSyncQueue(storage);
+  let sendCount = 0;
+
+  const result = await queue.synchronize(true, async () => {
+    sendCount += 1;
+  });
+
+  assert.equal(sendCount, 0);
+  assert.deepEqual(result, {
+    synchronized: [],
+    failed: ["inspection-synthetic-invalid"]
+  });
+  assert.equal(queue.pending().length, 1);
 });

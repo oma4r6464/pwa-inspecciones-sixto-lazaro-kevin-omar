@@ -5,6 +5,7 @@ import {
   type InspectionPayload,
   type QueuedInspection
 } from "../storage/schema";
+import { InspectionInputValidationError, validateInspectionPayload } from "../security/inspection-input";
 import { InspectionSyncQueue, type SyncResult, type SyncSender } from "./queue";
 
 export type InspectionStore = {
@@ -53,7 +54,9 @@ export async function openInspectionStore(factory: IDBFactory): Promise<Inspecti
   return {
     save: (id, payload, now = Date.now()) =>
       serialize(async () => {
-        const item = queue.enqueue(createInspectionRecord(id, payload, now));
+        const validation = validateInspectionPayload(payload);
+        if (!validation.valid) throw new InspectionInputValidationError(validation.issues);
+        const item = queue.enqueue(createInspectionRecord(id, validation.value, now));
         await storage.flush();
         return item;
       }),

@@ -5,6 +5,57 @@ https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar
 
 SHA final del equipo: se fija en Classroom con el último commit entregado en `main`.
 
+## Trazabilidad de Semana 9
+
+| Orden | Responsable | Contribución verificable |
+| --- | --- | --- |
+| 1 | ArmandoValerio | [PR #42](https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/pull/42), commit `9bfe13dcc3ceed1ffa9c8603b8d59dd1059851e8`: amenazas y validación. |
+| 2 | oma4r6464 | [PR #44](https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/pull/44), commit `254c60c163b01baaee923b28e048d4d6fc031ca8`: CSP y permisos. |
+| 3 | jesus-vegmed | [PR #43](https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/pull/43), commit `bc2edde012bcdca67f4148f8cae43d96683bc578`: inventario, robots y pruebas. |
+| 4 | KIRA21M | Commit `a5840f09ea8052189afc9313ae57cf30f5164bed`: consolidación de entrega, CI, documentación y comprobaciones de seguridad. |
+
+Los PR de los tres primeros integrantes se integraron en ese orden en `dev`,
+preservando sus commits. En la integración se conservó la política central de
+Omar y se adaptaron las pruebas de Jesús al contrato de Armando. Las
+notificaciones no están gobernadas por Permissions-Policy; su permiso se pide
+por acción explícita. Los apartados de semanas anteriores son evidencia
+histórica, no la descripción del estado actual.
+
+El kit permite hasta tres integrantes. No consta en el repositorio una
+autorización del profesor para cuatro; esa condición académica sigue pendiente.
+
+### Samuel Jonathan Trujillo Bolaños (KIRA21M) — Semana 9
+
+- **SHA de contribución**: `a5840f09ea8052189afc9313ae57cf30f5164bed`.
+- **Contribución concreta**: integración ordenada en `dev`, resolución de los
+  conflictos de configuración y evidencia, README, workflow original del kit
+  de Semana 9, actualización del verificador y documentación coherente con
+  IndexedDB y los controles finales. Ampliación E2E para texto seguro y bloqueo
+  de conexiones ajenas; corrección de la carrera de preparación de E2E.
+- **Decisión técnica**: reutilizar una sola política de headers y las reglas
+  de entrada ya integradas. El ejecutor de seguridad usa tsx para resolver
+  imports transitivos y genera `test-results/security-report.json` con salida
+  real y revisión. Los HTML y trazas se conservan como artefactos, no en Git.
+- **Verificación automatizada realizada durante la integración**: instalación
+  `npm ci`; lint y tipos PASS; build PASS; 10 unitarias, 9 de integración,
+  suites acumuladas y seguridad PASS; 7 E2E PASS en Chromium. `npm run verify`
+  PASS es el equivalente exacto de `make verify` en este entorno.
+- **Fallos y límites**: el primer E2E encontró un navegador desactualizado;
+  después apareció una carrera con la activación del worker. Se instaló el
+  Chromium del lockfile y se esperó la activación en contextos aislados. El
+  script público original terminó `PUBLIC_OK`/0 aun mostrando coincidencias
+  de palabras legítimas: no acredita ausencia de credenciales. `npm audit`
+  mantiene 2 alertas altas y 1 crítica; no se realizó una migración mayor de
+  Next.js. La demo no acredita HTTPS desplegado, autenticación ni cifrado local.
+- **Cambio defendible**: mostrar cómo los imports reales de la validación y
+  los headers se ejecutan en la suite y cómo el E2E detecta regresiones de
+  renderizado de texto y de `connect-src`, sin llamadas a servicios privados.
+- **Uso de IA**: asistente de desarrollo de OpenAI para inspección, resolución
+  de conflictos, ajustes de pruebas y documentación. Las comprobaciones
+  anteriores se ejecutaron mediante herramientas automatizadas; no se
+  atribuyen al estudiante ejecuciones manuales no verificadas. La validación
+  humana y defensa de estas decisiones corresponde a Samuel antes de entregar.
+
 ---
 
 ### Jesús Emanuel Vega Medina (jesus-vegmed) — Semana 8 E2E
@@ -871,3 +922,178 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
   de esta evidencia. 
   leí el código, ejecuté personalmente los comandos anteriores y los
   resultados reportados son los de mi terminal.
+
+---
+
+### ArmandoValerio (GitHub) — Semana 9: modelo de amenazas y validación de capturas
+
+- **Contribución concreta y referencia**: trabajo en la rama
+  `feat/week-09-security-validation`. La contribución incluye
+  [el modelo de amenazas](../docs/threat-model.md),
+  [las reglas de entrada](../src/lib/security/inspection-input.ts),
+  la integración con [el flujo de captura](../src/app/page.tsx),
+  [el almacén offline](../src/lib/sync/inspection-store.ts) y
+  [la cola de sincronización](../src/lib/sync/queue.ts), además de sus pruebas.
+  Commit de implementación:
+  [`9bfe13dcc3ceed1ffa9c8603b8d59dd1059851e8`](https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/commit/9bfe13dcc3ceed1ffa9c8603b8d59dd1059851e8).
+  La rama está publicada en GitHub. Cuenta de GitHub responsable de esta
+  evidencia: [`ArmandoValerio`](https://github.com/ArmandoValerio).
+
+- **Decisión técnica**: validar en más de un límite de confianza, no solo en el
+  formulario. La captura se normaliza y comprueba al enviarse, el almacén
+  rechaza payloads antes de persistirlos, y la cola vuelve a validarlos antes
+  de enviarlos. Una entrada heredada inválida se deja pendiente y no se envía.
+  Los errores de guardado, sincronización y apertura de IndexedDB usan
+  `createSafeErrorContext`; la interfaz muestra una referencia y texto
+  genérico, nunca el contenido introducido ni el detalle de la excepción.
+
+- **Pruebas ejecutadas y resultados reales**:
+  - `npm run test:unit`: PASS, 10 pruebas y 0 fallidas; incluye capturas
+    sintéticas válidas, espacios, límites Unicode, valores excedidos, controles,
+    estados y tipos inválidos, y bloqueo de envío de datos inválidos.
+  - `npm run test:integration`: PASS, 9 pruebas y 0 fallidas; incluye rechazo
+    de captura inválida antes de persistir y recuperación/sincronización offline.
+  - `npm test`: PASS; starter, manifest, service worker, offline, rendering,
+    listado, sincronización, capacidades y security.
+  - `npm run test:e2e`: PASS, 3 pruebas; flujo offline, permiso de cámara con
+    fallback y error sintético de IndexedDB sin revelar detalles internos.
+  - `npm run typecheck`: PASS.
+  - `npm run lint`: PASS, lint estructural de 66 archivos.
+  - `npm run build`: PASS, compilación de producción.
+  - `git diff --check`: PASS.
+  - `npm ci` terminó correctamente. `npm audit --omit=dev` reportó 3
+    vulnerabilidades en dependencias (2 altas y 1 crítica); no apliqué
+    actualizaciones fuera de alcance.
+
+- **Limitación**: la sincronización remota es sintética y no hay autenticación,
+  servidor ni validación del backend. IndexedDB persiste texto sin cifrar; la
+  aplicación debe seguir usando solo datos sintéticos. No se implementaron
+  CSP, Permissions-Policy, retención ni borrado seguro. La validación comprueba
+  que la fecha sea texto, pero no su formato calendárico; hallazgos es un
+  entero no negativo, sin comprobar su coherencia con el estado. Las alertas
+  de dependencias requieren seguimiento separado.
+
+- **Cambio defendible**: las reglas son explícitas, tipadas y comprobadas antes
+  de cada operación que guarda o transmite una inspección. Si se altera la
+  interfaz o IndexedDB contiene un registro inválido, la validación del
+  formulario no se toma como única defensa. Los tests demuestran tanto la
+  aceptación de casos sintéticos válidos como el rechazo en persistencia y
+  sincronización.
+
+- **Uso de IA declarado**: utilicé GitHub Copilot (asistente de IA mediante
+  Copilot SDK en VS Code) para ayudar a inspeccionar el flujo existente,
+  proponer y aplicar la validación, integrar el manejo seguro de errores,
+  preparar pruebas y redactar el modelo de amenazas y esta evidencia. Las
+  partes influidas fueron `src/lib/security/inspection-input.ts`, las
+  integraciones de captura/guardado/sincronización, las pruebas unitarias,
+  integración y E2E, `docs/threat-model.md` y este apartado. Revisé las reglas
+  y los cambios, mantuve los datos sintéticos y ejecuté las pruebas indicadas;
+  los resultados declarados corresponden a sus salidas reales.
+
+---
+
+### Kevin Omar Sixto Lázaro — Semana 9: CSP y permisos mínimos de la PWA
+
+- **SHA de la contribución**: `254c60c163b01baaee923b28e048d4d6fc031ca8`.
+
+- **Contribución concreta y enlace**: Issue
+  [#39](https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/issues/39).
+  Trabajo en la rama
+  [`feat/week-09-csp-permisos`](https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/tree/feat/week-09-csp-permisos),
+  con PR hacia `dev`. Implementé la CSP, la `Permissions-Policy` y las
+  cabeceras de seguridad en
+  [`src/lib/security/security-headers.mjs`](../src/lib/security/security-headers.mjs),
+  su aplicación en [`next.config.mjs`](../next.config.mjs), la comprobación
+  reproducible [`scripts/check-security-headers.mjs`](../scripts/check-security-headers.mjs)
+  (`npm run check:headers`), las pruebas
+  [`tests/security-headers.spec.mjs`](../tests/security-headers.spec.mjs) y
+  [`tests/e2e/security-headers.spec.ts`](../tests/e2e/security-headers.spec.ts),
+  y la actualización de los controles en
+  [`docs/threat-model.md`](../docs/threat-model.md). El SHA evaluado es el que
+  se fija en Classroom.
+
+- **Decisión técnica**: aplicar una CSP estática desde `next.config.mjs` en
+  lugar de una con nonce por middleware. La política restringe todo al propio
+  origen y deniega marcos, objetos y orígenes ajenos. La única excepción en
+  producción es `script-src 'unsafe-inline'`, porque Next.js inserta scripts
+  inline de hidratación sin nonce; usar nonce volvería dinámicas todas las
+  páginas y rompería el shell estático que precachea el service worker. Los
+  permisos de cámara, geolocalización y notificaciones ya se pedían solo bajo
+  acción con fallback sintético, así que no cambié ese código;
+  `Permissions-Policy` limita cámara y geolocalización al propio origen y
+  deniega micrófono, pago y USB.
+
+- **Pruebas ejecutadas y resultados reales**:
+  - `npm test`: PASS; incluye `security-headers.spec.mjs`.
+  - `npm run test:unit`: PASS, 10 pruebas y 0 fallidas.
+  - `npm run test:integration`: PASS, 9 pruebas y 0 fallidas.
+  - `npm run test:e2e`: PASS, 5 pruebas; las 3 existentes siguen pasando con la
+    CSP y las 2 nuevas comprueban las cabeceras en respuestas reales y que no
+    hay violaciones de CSP en navegación, service worker y opciones.
+  - `npm run typecheck`: PASS.
+  - `npm run lint`: PASS, lint estructural.
+  - `npm run build`: PASS.
+  - `npm run build && npm start` seguido de `npm run check:headers`: PASS en
+    las 6 rutas (`/`, `/inspecciones`, `/inspecciones/inspection-001`,
+    `/manifest.webmanifest`, `/sw.js`, `/icon.svg`).
+  - `git diff --check`: PASS.
+
+- **Limitación**: la CSP de producción conserva `script-src 'unsafe-inline'`,
+  por lo que no bloquea por sí sola un script inline inyectado; la defensa
+  sigue dependiendo del renderizado como texto y de la validación de #38.
+  HSTS y los permisos del dispositivo exigen HTTPS en el despliegue, que no
+  está definido en este repositorio. Las notificaciones no se pueden controlar
+  con cabeceras. No se corrigieron las alertas de dependencias.
+
+- **Cambio defendible**: una sola fuente de verdad para la política, aplicada
+  a todas las respuestas (incluidos `sw.js` y el manifest), con una prueba que
+  la valida, un comando que la comprueba en respuestas reales y una prueba en
+  navegador que detecta bloqueos. Las excepciones están justificadas en
+  `docs/threat-model.md`.
+
+- **Uso de IA declarado**: utilicé Claude (Anthropic, claude.ai) para analizar
+  el issue y los criterios de aceptación, revisar la rama de Armando, proponer
+  el código de `security-headers.mjs`, `next.config.mjs`, el script, las
+  pruebas y la redacción de `docs/threat-model.md` y de este apartado. Revisé
+  el código, lo apliqué yo mismo, ejecuté los comandos anteriores en mi
+  terminal y los resultados declarados son los de mis ejecuciones.
+---
+
+### Jesus Emanuel Vega Medina (jesus-vegmed) — Semana 9
+
+- **SHA de la contribución:** `bc2edde012bcdca67f4148f8cae43d96683bc578`.
+- **Contribución concreta:** agregué el inventario real de datos en
+  `docs/privacy-data-inventory.md`, la política `public/robots.txt`, la
+  ampliación de `tests/security.spec.ts` y los encabezados CSP y
+  `Permissions-Policy` en `next.config.mjs`. También actualicé el verificador
+  para exigir los artefactos de esta entrega.
+- **Decisión técnica:** mantener el offline existente y documentar sus límites,
+  incluyendo la cola en IndexedDB, en vez de atribuir cifrado o borrado que no
+  existen. La CSP restringe el mismo origen, bloquea objetos y marcos, y la
+  política de permisos conserva sólo cámara, geolocalización y notificaciones
+  opcionales; micrófono, pagos y USB quedan desactivados. `robots.txt` bloquea
+  rastreo, pero se documenta como una instrucción y no como seguridad.
+- **Prueba ejecutada:** `npm test -- --run`, `npm run lint`, `npm run typecheck`,
+  `npm run build` y `npm run verify`. La prueba de seguridad conserva el caso
+  de normalización de errores y agrega casos positivos y negativos de
+  validación, ausencia de detalles sensibles, `robots.txt`, CSP y permisos.
+- **Resultado real:** `npm ci` terminó correctamente con 35 paquetes
+  instalados; informó 3 vulnerabilidades heredadas (2 altas y 1 crítica).
+  `npm test -- --run` pasó starter, manifest, service worker, offline,
+  rendering, inspecciones, sync, capabilities y security. También pasaron
+  `npm run lint` (66 archivos), `npm run typecheck`, `npm run build` y
+  `npm run verify`. Con `npm start`, `GET /robots.txt` devolvió 200 y `GET /`
+  devolvió CSP y `Permissions-Policy` con los valores esperados.
+- **Limitación:** no hay backend, autenticación, cifrado local, retención
+  automática ni navegador físico en esta entrega; `robots.txt` no impide acceso
+  y los permisos dependen del navegador.
+- **Cambio defendible:** los datos sintéticos permanecen aislados del
+  transporte externo; un error de validación no devuelve el contenido recibido
+  y la configuración del navegador se comprueba por archivo y comportamiento
+  reproducible.
+- **Uso de IA:** utilicé Copilot SDK en VS Code para revisar el código
+  existente, proponer la estructura del inventario y los casos de prueba.
+  Influyó en `docs/privacy-data-inventory.md`, `tests/security.spec.ts`,
+  `scripts/run-security-spec.mjs`, `next.config.mjs`, `public/robots.txt` y
+  esta sección. Validé manualmente cada cambio, revisé las rutas reales y
+  ejecuté los comandos indicados.

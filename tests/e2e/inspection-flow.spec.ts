@@ -3,24 +3,17 @@ import { expect, test } from "@playwright/test";
 const location = "Laboratorio E2E Sintetico";
 const summary = "Captura E2E sin datos reales";
 
-async function clearScenarioState(page: import("@playwright/test").Page) {
+async function initializeScenario(page: import("@playwright/test").Page) {
   await page.goto("/");
-  await page.evaluate(async () => {
-    await new Promise<void>((resolve, reject) => {
-      const request = indexedDB.deleteDatabase("pwa-inspecciones-queue");
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
-      request.onblocked = () => resolve();
-    });
-    localStorage.clear();
-    sessionStorage.clear();
-  });
-  await page.reload();
+  // Playwright crea un contexto nuevo por prueba: no hay datos heredados.
+  // Esperar la activación evita competir con la recarga inicial del worker.
+  await page.waitForFunction(() => Boolean(navigator.serviceWorker?.controller));
+  await page.waitForLoadState("networkidle");
   await expect(page.getByRole("heading", { name: "Inspecciones de laboratorio" })).toBeVisible();
 }
 
 test.beforeEach(async ({ page }) => {
-  await clearScenarioState(page);
+  await initializeScenario(page);
 });
 
 test("crea, conserva offline al recargar y sincroniza una sola vez al reconectar", async ({ page, context }) => {
@@ -65,4 +58,39 @@ test("permiso de cámara denegado usa fallback y permite completar la captura", 
   await page.getByLabel("Resumen *").fill("Captura completada con fallback");
   await page.getByRole("button", { name: "Guardar inspección" }).click();
   await expect(page.getByText('Inspección "Laboratorio E2E Sin Camara" agregada correctamente.')).toBeVisible();
+});
+
+test("fallo de almacenamiento muestra errores controlados sin detalles internos", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(indexedDB, "open", {
+      configurable: true,
+      value: () => {
+        throw new Error("synthetic-storage-detail-must-not-be-shown");
+      }
+    });
+  });
+  await page.reload();
+
+  await expect(
+    page.getByText("El almacenamiento local no está disponible. No se pueden guardar capturas ahora.")
+  ).toBeVisible();
+  await page.getByRole("button", { name: "+ Agregar inspección" }).click();
+  await page.getByLabel("Ubicación sintética *").fill("Laboratorio E2E Error Controlado");
+  await page.getByLabel("Resumen *").fill("Prueba sintética de error local");
+  await page.getByRole("button", { name: "Guardar inspección" }).click();
+
+  await expect(page.getByRole("heading", { name: "No se pudo guardar la inspección" })).toBeVisible();
+  await expect(page.getByText(/Referencia: inspection-save/)).toBeVisible();
+  await expect(page.getByText(/synthetic-storage-detail-must-not-be-shown/)).toHaveCount(0);
+});
+
+test("el contenido con marcado se guarda y representa como texto sin ejecutarse", async ({ page }) => {
+  const markup = '<img src=x onerror="window.syntheticXss=true">';
+  await page.getByRole("button", { name: "+ Agregar inspección" }).click();
+  await page.getByLabel("Ubicación sintética *").fill("Laboratorio Sintetico Texto Seguro");
+  await page.getByLabel("Resumen *").fill(markup);
+  await page.getByRole("button", { name: "Guardar inspección" }).click();
+  await expect(page.getByText(markup, { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => "syntheticXss" in window)).toBe(false);
+  await expect(page.locator('img[src="x"]')).toHaveCount(0);
 });
