@@ -107,41 +107,103 @@ o gestión posterior; no se elimina automáticamente.
   puntuación y acentos; la defensa contra ejecución depende del renderizado de
   texto y de no insertar contenido con APIs HTML.
 
-## Limitaciones y asuntos pendientes
+## Controles de CSP, cabeceras y permisos (Semana 9, issue #39)
 
-- No hay Content-Security-Policy ni Permissions-Policy configuradas en la
-  configuración de Next.js revisada.
-- No existe servidor; este modelo no evalúa seguridad de red, identidad,
-  autorización, validación del backend ni almacenamiento remoto.
-- IndexedDB es legible por el mismo origen y por quien controle el perfil del
-  navegador; no se cifra y no tiene política de retención.
-- La prueba de service worker comprueba su estructura, no inventaría todas las
-  respuestas caché en una sesión real. Excluir APIs explícitamente antes de
-  incorporarlas.
-- El manejo actual valida que `date` sea string, no que sea una fecha ISO
-  válida; valida hallazgos como entero no negativo, sin cotejarlos con el
-  resultado.
-- La instalación de dependencias durante la validación reportó tres alertas de
-  auditoría de dependencias (dos altas y una crítica). No se actualizaron en
-  esta contribución porque el alcance es la validación de captura; deben
-  evaluarse en una tarea de dependencias y seguridad.
+Responsable: `oma4r6464`. Enlaza con las amenazas de #38 (filas de ejecución de
+contenido no confiable y de abuso de permisos de la tabla anterior) y entrega
+a #40 los escenarios de la última subsección.
 
-## Evidencia reproducible de esta contribución
+### Dónde está y cómo se aplica
 
-Con dependencias instaladas (`npm ci`) y Chromium disponible para Playwright:
+- `src/lib/security/security-headers.mjs`: única fuente de la CSP, la
+  `Permissions-Policy` y el resto de cabeceras. Es `.mjs` porque
+  `next.config.mjs` no puede importar TypeScript.
+- `next.config.mjs`: aplica las cabeceras a `/:path*` (páginas, `sw.js`,
+  manifest, icono y estáticos de `/_next`) y desactiva `X-Powered-By`.
+- Producción (`npm run build && npm start`) usa la política estricta;
+  desarrollo (`npm run dev`) añade solo lo que exige el servidor de Next.js.
+
+### Política aplicada (producción)
+
+| Directiva | Valor | Motivo |
+| --- | --- | --- |
+| `default-src` | `'self'` | Todo lo no listado solo puede venir del propio origen. |
+| `script-src` | `'self' 'unsafe-inline'` | Excepción: ver abajo. |
+| `style-src` | `'self'` | La app solo usa hojas de estilo propias, sin estilos inline. |
+| `img-src` | `'self' data:` | Icono y recursos propios. |
+| `font-src`, `connect-src`, `worker-src`, `manifest-src` | `'self'` | Service worker, manifest y sincronización sintética son del mismo origen; no hay APIs ni CDN externos. |
+| `frame-src`, `object-src`, `frame-ancestors` | `'none'` | No se usan marcos ni plugins y nadie puede incrustar la app. |
+| `base-uri`, `form-action` | `'self'` | Evita cambiar la base de URLs o enviar formularios a otros orígenes. |
+
+Otras cabeceras: `Permissions-Policy: camera=(self), geolocation=(self),
+microphone=(), payment=(), usb=()`, `X-Content-Type-Options: nosniff`,
+`X-Frame-Options: DENY`, `Referrer-Policy: no-referrer` y
+`Strict-Transport-Security: max-age=31536000` (solo fuera de desarrollo).
+
+### Excepciones justificadas
+
+- **`script-src 'unsafe-inline'` (producción):** las páginas estáticas de
+  Next.js 14 incluyen scripts inline de arranque (`self.__next_f.push(...)`) y
+  no tienen nonce; sin la excepción la aplicación no se hidrata. Usar nonce
+  exigiría un middleware que vuelve dinámicas todas las páginas y rompería el
+  shell estático que el service worker precachea. Riesgo residual: la CSP no
+  bloquea un script inline inyectado; se compensa con el renderizado como texto
+  y la validación de entradas de #38.
+- **`'unsafe-eval'` y `style-src 'unsafe-inline'` (solo desarrollo):** los exige
+  React Refresh y el servidor de desarrollo. No se envían en producción.
+- No se añade `upgrade-insecure-requests` para no romper las pruebas locales
+  sobre HTTP; la obligación de HTTPS se documenta abajo.
+
+### Permisos y fallback
+
+- **Cámara:** se pide solo al pulsar "Comprobar camara", sin audio; si se
+  deniega, no existe o falla, se usa evidencia sintética y el flujo continúa.
+- **Geolocalización:** la interfaz usa un proveedor sintético y no pide la
+  posición real; sin soporte o con permiso denegado se usa la ubicación
+  sintética.
+- **Notificaciones:** se piden solo al pulsar "Probar notificacion"; si se
+  deniegan o no hay soporte, se muestra un aviso local. No hay cabecera para
+  controlarlas.
+- Ningún permiso se solicita al cargar la página.
+
+### HTTPS y entorno local
+
+- **Despliegue:** HTTPS es requisito. El service worker, la cámara, la
+  geolocalización y las notificaciones solo funcionan en contextos seguros, y
+  HSTS solo tiene efecto sobre HTTPS. El servidor o proxy de despliegue debe
+  terminar TLS y redirigir HTTP a HTTPS.
+- **Local:** `http://localhost` y `http://127.0.0.1` se tratan como contexto
+  seguro. `npm run dev` usa la CSP de desarrollo, no registra el service worker
+  y no envía HSTS. `npm run build && npm start` usa la política de producción y
+  es el entorno de las pruebas E2E y de la comprobación de cabeceras.
+
+### Cómo comprobarlo
 
 ```powershell
-npm run test:unit
-npm run test:integration
-npm test
-npm run test:e2e
-npm run typecheck
-npm run lint
 npm run build
+npm start
+# en otra terminal:
+npm run check:headers
 ```
 
-En esta rama se ejecutaron esos comandos durante la implementación: las suites
-unitaria, integración, starter/seguridad y E2E pasaron; también pasaron el
-typecheck, lint y build. El E2E de error controlado confirma que una excepción
-sintética no se muestra en pantalla. El `npm audit` reportó las alertas
-indicadas arriba; su resolución no forma parte de este cambio.
+`check:headers` consulta `/`, `/inspecciones`, `/inspecciones/inspection-001`,
+`/manifest.webmanifest`, `/sw.js` y `/icon.svg` y compara cada cabecera con el
+valor esperado. Manualmente: `curl -I http://127.0.0.1:3000/` o la pestaña Red
+de DevTools. `npm test` valida la política (`tests/security-headers.spec.mjs`)
+y `npm run test:e2e` (`tests/e2e/security-headers.spec.ts`) comprueba las
+cabeceras en respuestas reales y que la navegación, el service worker y las
+opciones no generan violaciones de la CSP.
+
+### Escenarios para #40
+
+1. Las seis rutas anteriores devuelven CSP, Permissions-Policy, nosniff,
+   X-Frame-Options y Referrer-Policy, y no `X-Powered-By`.
+2. Cargar `/`, `/inspecciones` y un detalle sin violaciones de CSP en consola,
+   con el service worker registrado.
+3. Desde la consola de la página, `fetch("https://example.com")` queda
+   bloqueado por `connect-src`.
+4. Incrustar la app en un `iframe` de otro origen queda bloqueado.
+5. Cámara denegada o inexistente, ubicación sin soporte o denegada y
+   notificación denegada: el flujo de captura continúa con datos sintéticos.
+6. Texto sintético que parezca marcado HTML se muestra como texto; la CSP no
+   cubre este caso por la excepción de `'unsafe-inline'`.

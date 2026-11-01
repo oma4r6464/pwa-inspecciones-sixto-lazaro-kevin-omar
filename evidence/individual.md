@@ -938,3 +938,69 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
   integración y E2E, `docs/threat-model.md` y este apartado. Revisé las reglas
   y los cambios, mantuve los datos sintéticos y ejecuté las pruebas indicadas;
   los resultados declarados corresponden a sus salidas reales.
+
+---
+
+### Kevin Omar Sixto Lázaro — Semana 9: CSP y permisos mínimos de la PWA
+
+- **Contribución concreta y enlace**: Issue
+  [#39](https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/issues/39).
+  Trabajo en la rama
+  [`feat/week-09-csp-permisos`](https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/tree/feat/week-09-csp-permisos),
+  con PR hacia `dev`. Implementé la CSP, la `Permissions-Policy` y las
+  cabeceras de seguridad en
+  [`src/lib/security/security-headers.mjs`](../src/lib/security/security-headers.mjs),
+  su aplicación en [`next.config.mjs`](../next.config.mjs), la comprobación
+  reproducible [`scripts/check-security-headers.mjs`](../scripts/check-security-headers.mjs)
+  (`npm run check:headers`), las pruebas
+  [`tests/security-headers.spec.mjs`](../tests/security-headers.spec.mjs) y
+  [`tests/e2e/security-headers.spec.ts`](../tests/e2e/security-headers.spec.ts),
+  y la actualización de los controles en
+  [`docs/threat-model.md`](../docs/threat-model.md). El SHA evaluado es el que
+  se fija en Classroom.
+
+- **Decisión técnica**: aplicar una CSP estática desde `next.config.mjs` en
+  lugar de una con nonce por middleware. La política restringe todo al propio
+  origen y deniega marcos, objetos y orígenes ajenos. La única excepción en
+  producción es `script-src 'unsafe-inline'`, porque Next.js inserta scripts
+  inline de hidratación sin nonce; usar nonce volvería dinámicas todas las
+  páginas y rompería el shell estático que precachea el service worker. Los
+  permisos de cámara, geolocalización y notificaciones ya se pedían solo bajo
+  acción con fallback sintético, así que no cambié ese código;
+  `Permissions-Policy` limita cámara y geolocalización al propio origen y
+  deniega micrófono, pago y USB.
+
+- **Pruebas ejecutadas y resultados reales**:
+  - `npm test`: PASS; incluye `security-headers.spec.mjs`.
+  - `npm run test:unit`: PASS, 10 pruebas y 0 fallidas.
+  - `npm run test:integration`: PASS, 9 pruebas y 0 fallidas.
+  - `npm run test:e2e`: PASS, 5 pruebas; las 3 existentes siguen pasando con la
+    CSP y las 2 nuevas comprueban las cabeceras en respuestas reales y que no
+    hay violaciones de CSP en navegación, service worker y opciones.
+  - `npm run typecheck`: PASS.
+  - `npm run lint`: PASS, lint estructural.
+  - `npm run build`: PASS.
+  - `npm run build && npm start` seguido de `npm run check:headers`: PASS en
+    las 6 rutas (`/`, `/inspecciones`, `/inspecciones/inspection-001`,
+    `/manifest.webmanifest`, `/sw.js`, `/icon.svg`).
+  - `git diff --check`: PASS.
+
+- **Limitación**: la CSP de producción conserva `script-src 'unsafe-inline'`,
+  por lo que no bloquea por sí sola un script inline inyectado; la defensa
+  sigue dependiendo del renderizado como texto y de la validación de #38.
+  HSTS y los permisos del dispositivo exigen HTTPS en el despliegue, que no
+  está definido en este repositorio. Las notificaciones no se pueden controlar
+  con cabeceras. No se corrigieron las alertas de dependencias.
+
+- **Cambio defendible**: una sola fuente de verdad para la política, aplicada
+  a todas las respuestas (incluidos `sw.js` y el manifest), con una prueba que
+  la valida, un comando que la comprueba en respuestas reales y una prueba en
+  navegador que detecta bloqueos. Las excepciones están justificadas en
+  `docs/threat-model.md`.
+
+- **Uso de IA declarado**: utilicé Claude (Anthropic, claude.ai) para analizar
+  el issue y los criterios de aceptación, revisar la rama de Armando, proponer
+  el código de `security-headers.mjs`, `next.config.mjs`, el script, las
+  pruebas y la redacción de `docs/threat-model.md` y de este apartado. Revisé
+  el código, lo apliqué yo mismo, ejecuté los comandos anteriores en mi
+  terminal y los resultados declarados son los de mis ejecuciones.
