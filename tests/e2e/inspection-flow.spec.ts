@@ -66,3 +66,27 @@ test("permiso de cámara denegado usa fallback y permite completar la captura", 
   await page.getByRole("button", { name: "Guardar inspección" }).click();
   await expect(page.getByText('Inspección "Laboratorio E2E Sin Camara" agregada correctamente.')).toBeVisible();
 });
+
+test("fallo de almacenamiento muestra errores controlados sin detalles internos", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(indexedDB, "open", {
+      configurable: true,
+      value: () => {
+        throw new Error("synthetic-storage-detail-must-not-be-shown");
+      }
+    });
+  });
+  await page.reload();
+
+  await expect(
+    page.getByText("El almacenamiento local no está disponible. No se pueden guardar capturas ahora.")
+  ).toBeVisible();
+  await page.getByRole("button", { name: "+ Agregar inspección" }).click();
+  await page.getByLabel("Ubicación sintética *").fill("Laboratorio E2E Error Controlado");
+  await page.getByLabel("Resumen *").fill("Prueba sintética de error local");
+  await page.getByRole("button", { name: "Guardar inspección" }).click();
+
+  await expect(page.getByRole("heading", { name: "No se pudo guardar la inspección" })).toBeVisible();
+  await expect(page.getByText(/Referencia: inspection-save/)).toBeVisible();
+  await expect(page.getByText(/synthetic-storage-detail-must-not-be-shown/)).toHaveCount(0);
+});

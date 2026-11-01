@@ -1,4 +1,5 @@
 import type { InspectionRecord, QueuedInspection } from "../storage/schema";
+import { InspectionInputValidationError, validateInspectionPayload } from "../security/inspection-input";
 import {
   decideRetry,
   isSamePayload,
@@ -49,6 +50,9 @@ export class InspectionSyncQueue {
   }
 
   enqueue(inspection: InspectionRecord, queuedAt = inspection.updatedAt): QueuedInspection {
+    const validation = validateInspectionPayload(inspection.payload);
+    if (!validation.valid) throw new InspectionInputValidationError(validation.issues);
+
     const items = this.storage.load();
     const existing = items.findIndex((item) => item.id === inspection.id);
     const previous = existing === -1 ? undefined : items[existing];
@@ -60,7 +64,7 @@ export class InspectionSyncQueue {
       : inspection.version ?? 1;
     const next: QueuedInspection = {
       ...inspection,
-      payload: { ...inspection.payload },
+      payload: { ...validation.value },
       version: nextVersion,
       attempts: previous?.attempts ?? 0,
       queuedAt,
@@ -114,12 +118,20 @@ export class InspectionSyncQueue {
     const remaining: QueuedInspection[] = [];
 
     for (const item of this.storage.load()) {
+      const validation = validateInspectionPayload(item.payload);
+      if (!validation.valid) {
+        failed.push(item.id);
+        remaining.push(item);
+        continue;
+      }
+
+      const validatedItem = { ...item, payload: validation.value };
       let sent = false;
       let runAttempts = 0;
       while (runAttempts < this.maxRetries && !sent) {
         runAttempts += 1;
         try {
-          await send(item);
+          await send(validatedItem);
           sent = true;
           synchronized.push(item.id);
         } catch {

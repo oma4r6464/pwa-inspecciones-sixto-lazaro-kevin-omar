@@ -871,3 +871,70 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
   de esta evidencia. 
   leí el código, ejecuté personalmente los comandos anteriores y los
   resultados reportados son los de mi terminal.
+
+---
+
+### ArmandoValerio (GitHub) — Semana 9: modelo de amenazas y validación de capturas
+
+- **Contribución concreta y referencia**: trabajo en la rama
+  `feat/week-09-security-validation`. La contribución incluye
+  [el modelo de amenazas](../docs/threat-model.md),
+  [las reglas de entrada](../src/lib/security/inspection-input.ts),
+  la integración con [el flujo de captura](../src/app/page.tsx),
+  [el almacén offline](../src/lib/sync/inspection-store.ts) y
+  [la cola de sincronización](../src/lib/sync/queue.ts), además de sus pruebas.
+  Commit de implementación:
+  [`9bfe13dcc3ceed1ffa9c8603b8d59dd1059851e8`](../commit/9bfe13dcc3ceed1ffa9c8603b8d59dd1059851e8).
+  La rama está publicada en GitHub. Cuenta de GitHub responsable de esta
+  evidencia: [`ArmandoValerio`](https://github.com/ArmandoValerio).
+
+- **Decisión técnica**: validar en más de un límite de confianza, no solo en el
+  formulario. La captura se normaliza y comprueba al enviarse, el almacén
+  rechaza payloads antes de persistirlos, y la cola vuelve a validarlos antes
+  de enviarlos. Una entrada heredada inválida se deja pendiente y no se envía.
+  Los errores de guardado, sincronización y apertura de IndexedDB usan
+  `createSafeErrorContext`; la interfaz muestra una referencia y texto
+  genérico, nunca el contenido introducido ni el detalle de la excepción.
+
+- **Pruebas ejecutadas y resultados reales**:
+  - `npm run test:unit`: PASS, 10 pruebas y 0 fallidas; incluye capturas
+    sintéticas válidas, espacios, límites Unicode, valores excedidos, controles,
+    estados y tipos inválidos, y bloqueo de envío de datos inválidos.
+  - `npm run test:integration`: PASS, 9 pruebas y 0 fallidas; incluye rechazo
+    de captura inválida antes de persistir y recuperación/sincronización offline.
+  - `npm test`: PASS; starter, manifest, service worker, offline, rendering,
+    listado, sincronización, capacidades y security.
+  - `npm run test:e2e`: PASS, 3 pruebas; flujo offline, permiso de cámara con
+    fallback y error sintético de IndexedDB sin revelar detalles internos.
+  - `npm run typecheck`: PASS.
+  - `npm run lint`: PASS, lint estructural de 66 archivos.
+  - `npm run build`: PASS, compilación de producción.
+  - `git diff --check`: PASS.
+  - `npm ci` terminó correctamente. `npm audit --omit=dev` reportó 3
+    vulnerabilidades en dependencias (2 altas y 1 crítica); no apliqué
+    actualizaciones fuera de alcance.
+
+- **Limitación**: la sincronización remota es sintética y no hay autenticación,
+  servidor ni validación del backend. IndexedDB persiste texto sin cifrar; la
+  aplicación debe seguir usando solo datos sintéticos. No se implementaron
+  CSP, Permissions-Policy, retención ni borrado seguro. La validación comprueba
+  que la fecha sea texto, pero no su formato calendárico; hallazgos es un
+  entero no negativo, sin comprobar su coherencia con el estado. Las alertas
+  de dependencias requieren seguimiento separado.
+
+- **Cambio defendible**: las reglas son explícitas, tipadas y comprobadas antes
+  de cada operación que guarda o transmite una inspección. Si se altera la
+  interfaz o IndexedDB contiene un registro inválido, la validación del
+  formulario no se toma como única defensa. Los tests demuestran tanto la
+  aceptación de casos sintéticos válidos como el rechazo en persistencia y
+  sincronización.
+
+- **Uso de IA declarado**: utilicé GitHub Copilot (asistente de IA mediante
+  Copilot SDK en VS Code) para ayudar a inspeccionar el flujo existente,
+  proponer y aplicar la validación, integrar el manejo seguro de errores,
+  preparar pruebas y redactar el modelo de amenazas y esta evidencia. Las
+  partes influidas fueron `src/lib/security/inspection-input.ts`, las
+  integraciones de captura/guardado/sincronización, las pruebas unitarias,
+  integración y E2E, `docs/threat-model.md` y este apartado. Revisé las reglas
+  y los cambios, mantuve los datos sintéticos y ejecuté las pruebas indicadas;
+  los resultados declarados corresponden a sus salidas reales.

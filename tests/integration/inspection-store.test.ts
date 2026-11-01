@@ -31,6 +31,28 @@ test("el store de la interfaz recupera la captura offline tras reabrir", async (
   assert.equal(view.summary, "sin conexion");
 });
 
+test("el store rechaza una captura invalida antes de persistirla", async () => {
+  const store = await openInspectionStore(newIsolatedDatabase());
+
+  await assert.rejects(
+    store.save(
+      "inspection-store-invalid",
+      {
+        result: "attention",
+        notes: " ",
+        location: "Laboratorio Demo 08",
+        inspector: "Técnica Demo",
+        date: "2026-10-24",
+        findings: 1
+      },
+      1_000
+    ),
+    { name: "InspectionInputValidationError" }
+  );
+  assert.deepEqual(store.pending(), []);
+  store.close();
+});
+
 test("reintento del store con la misma clave deja un solo registro remoto", async () => {
   const db = newIsolatedDatabase();
   const remote = new FakeRemote();
