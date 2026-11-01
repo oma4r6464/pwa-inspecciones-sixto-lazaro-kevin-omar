@@ -44,3 +44,6 @@ await import("../scripts/run-sync-spec.mjs");
 
 // Ejecutar pruebas críticas de capacidades opcionales y sus fallbacks:
 await import("../scripts/run-capabilities-spec.mjs");
+
+// Ejecutar pruebas de la Semana 9: CSP, cabeceras y Permissions-Policy:
+await import("./security-headers.spec.mjs");

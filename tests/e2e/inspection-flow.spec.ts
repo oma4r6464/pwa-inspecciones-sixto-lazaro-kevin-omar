@@ -3,24 +3,17 @@ import { expect, test } from "@playwright/test";
 const location = "Laboratorio E2E Sintetico";
 const summary = "Captura E2E sin datos reales";
 
-async function clearScenarioState(page: import("@playwright/test").Page) {
+async function initializeScenario(page: import("@playwright/test").Page) {
   await page.goto("/");
-  await page.evaluate(async () => {
-    await new Promise<void>((resolve, reject) => {
-      const request = indexedDB.deleteDatabase("pwa-inspecciones-queue");
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
-      request.onblocked = () => resolve();
-    });
-    localStorage.clear();
-    sessionStorage.clear();
-  });
-  await page.reload();
+  // Playwright crea un contexto nuevo por prueba: no hay datos heredados.
+  // Esperar la activación evita competir con la recarga inicial del worker.
+  await page.waitForFunction(() => Boolean(navigator.serviceWorker?.controller));
+  await page.waitForLoadState("networkidle");
   await expect(page.getByRole("heading", { name: "Inspecciones de laboratorio" })).toBeVisible();
 }
 
 test.beforeEach(async ({ page }) => {
-  await clearScenarioState(page);
+  await initializeScenario(page);
 });
 
 test("crea, conserva offline al recargar y sincroniza una sola vez al reconectar", async ({ page, context }) => {
