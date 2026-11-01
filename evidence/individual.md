@@ -5,6 +5,57 @@ https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar
 
 SHA final del equipo: se fija en Classroom con el último commit entregado en `main`.
 
+## Trazabilidad de Semana 9
+
+| Orden | Responsable | Contribución verificable |
+| --- | --- | --- |
+| 1 | ArmandoValerio | [PR #42](https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/pull/42), commit `9bfe13dcc3ceed1ffa9c8603b8d59dd1059851e8`: amenazas y validación. |
+| 2 | oma4r6464 | [PR #44](https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/pull/44), commit `254c60c163b01baaee923b28e048d4d6fc031ca8`: CSP y permisos. |
+| 3 | jesus-vegmed | [PR #43](https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/pull/43), commit `bc2edde012bcdca67f4148f8cae43d96683bc578`: inventario, robots y pruebas. |
+| 4 | KIRA21M | Commit `a5840f09ea8052189afc9313ae57cf30f5164bed`: consolidación de entrega, CI, documentación y comprobaciones de seguridad. |
+
+Los PR de los tres primeros integrantes se integraron en ese orden en `dev`,
+preservando sus commits. En la integración se conservó la política central de
+Omar y se adaptaron las pruebas de Jesús al contrato de Armando. Las
+notificaciones no están gobernadas por Permissions-Policy; su permiso se pide
+por acción explícita. Los apartados de semanas anteriores son evidencia
+histórica, no la descripción del estado actual.
+
+El kit permite hasta tres integrantes. No consta en el repositorio una
+autorización del profesor para cuatro; esa condición académica sigue pendiente.
+
+### Samuel Jonathan Trujillo Bolaños (KIRA21M) — Semana 9
+
+- **SHA de contribución**: `a5840f09ea8052189afc9313ae57cf30f5164bed`.
+- **Contribución concreta**: integración ordenada en `dev`, resolución de los
+  conflictos de configuración y evidencia, README, workflow original del kit
+  de Semana 9, actualización del verificador y documentación coherente con
+  IndexedDB y los controles finales. Ampliación E2E para texto seguro y bloqueo
+  de conexiones ajenas; corrección de la carrera de preparación de E2E.
+- **Decisión técnica**: reutilizar una sola política de headers y las reglas
+  de entrada ya integradas. El ejecutor de seguridad usa tsx para resolver
+  imports transitivos y genera `test-results/security-report.json` con salida
+  real y revisión. Los HTML y trazas se conservan como artefactos, no en Git.
+- **Verificación automatizada realizada durante la integración**: instalación
+  `npm ci`; lint y tipos PASS; build PASS; 10 unitarias, 9 de integración,
+  suites acumuladas y seguridad PASS; 7 E2E PASS en Chromium. `npm run verify`
+  PASS es el equivalente exacto de `make verify` en este entorno.
+- **Fallos y límites**: el primer E2E encontró un navegador desactualizado;
+  después apareció una carrera con la activación del worker. Se instaló el
+  Chromium del lockfile y se esperó la activación en contextos aislados. El
+  script público original terminó `PUBLIC_OK`/0 aun mostrando coincidencias
+  de palabras legítimas: no acredita ausencia de credenciales. `npm audit`
+  mantiene 2 alertas altas y 1 crítica; no se realizó una migración mayor de
+  Next.js. La demo no acredita HTTPS desplegado, autenticación ni cifrado local.
+- **Cambio defendible**: mostrar cómo los imports reales de la validación y
+  los headers se ejecutan en la suite y cómo el E2E detecta regresiones de
+  renderizado de texto y de `connect-src`, sin llamadas a servicios privados.
+- **Uso de IA**: asistente de desarrollo de OpenAI para inspección, resolución
+  de conflictos, ajustes de pruebas y documentación. Las comprobaciones
+  anteriores se ejecutaron mediante herramientas automatizadas; no se
+  atribuyen al estudiante ejecuciones manuales no verificadas. La validación
+  humana y defensa de estas decisiones corresponde a Samuel antes de entregar.
+
 ---
 
 ### Jesús Emanuel Vega Medina (jesus-vegmed) — Semana 8 E2E
@@ -884,7 +935,7 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
   [el almacén offline](../src/lib/sync/inspection-store.ts) y
   [la cola de sincronización](../src/lib/sync/queue.ts), además de sus pruebas.
   Commit de implementación:
-  [`9bfe13dcc3ceed1ffa9c8603b8d59dd1059851e8`](../commit/9bfe13dcc3ceed1ffa9c8603b8d59dd1059851e8).
+  [`9bfe13dcc3ceed1ffa9c8603b8d59dd1059851e8`](https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/commit/9bfe13dcc3ceed1ffa9c8603b8d59dd1059851e8).
   La rama está publicada en GitHub. Cuenta de GitHub responsable de esta
   evidencia: [`ArmandoValerio`](https://github.com/ArmandoValerio).
 
@@ -942,6 +993,8 @@ SHA final del equipo: se fija en Classroom con el último commit entregado en `m
 ---
 
 ### Kevin Omar Sixto Lázaro — Semana 9: CSP y permisos mínimos de la PWA
+
+- **SHA de la contribución**: `254c60c163b01baaee923b28e048d4d6fc031ca8`.
 
 - **Contribución concreta y enlace**: Issue
   [#39](https://github.com/oma4r6464/pwa-inspecciones-sixto-lazaro-kevin-omar/issues/39).
