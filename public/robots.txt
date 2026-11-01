@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /
+
+# La aplicacion usa datos sinteticos y no publica contenido para indexacion.

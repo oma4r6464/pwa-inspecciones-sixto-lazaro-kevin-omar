@@ -27,6 +27,8 @@ const required = [
   "docs/security-controls.md",
   "src/lib/security/safe-error.ts",
   "tests/security.spec.ts",
+  "docs/privacy-data-inventory.md",
+  "public/robots.txt",
   "src/lib/sync/queue.ts",
   "src/lib/storage/schema.ts",
   "src/lib/sync/conflict-policy.ts",
